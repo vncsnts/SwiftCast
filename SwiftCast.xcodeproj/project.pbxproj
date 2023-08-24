@@ -152,10 +152,10 @@
 				8A5E02C82A8D2E0400F73CAD /* Extensions */,
 				8A5E02A32A8D2E0400F73CAD /* Managers */,
 				8A5E02A02A8D2E0400F73CAD /* Resources */,
+				8A5E02CA2A8D2E0400F73CAD /* Utilities */,
 				8A5E02A92A8D2E0400F73CAD /* Screens */,
 				8A5E02C52A8D2E0400F73CAD /* Services */,
 				8A5E02C42A8D2E0400F73CAD /* SwiftCast.entitlements */,
-				8A5E02CA2A8D2E0400F73CAD /* Utilities */,
 			);
 			path = SwiftCast;
 			sourceTree = "<group>";
