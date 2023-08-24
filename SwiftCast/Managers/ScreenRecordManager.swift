@@ -39,12 +39,14 @@ class ScreenRecordManager: NSObject, ObservableObject {
         didSet { updateEngine() }
     }
     
+    @Published var isChunked = false
+    
     private var stream: SCStream?
     private let screenQueue = DispatchQueue(label: "com.vncsnts.swiftCast.screenBuffer")
     private var scaleFactor: Int { Int(NSScreen.main?.backingScaleFactor ?? 2) }
     private var availableApps = [SCRunningApplication]()
-//    private var assetWriter = AVAssetWriter(contentType: .quickTimeMovie)
-//    private var videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
+    private var assetWriter = AVAssetWriter(contentType: .quickTimeMovie)
+    private var videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
     private var bitAssetWriter = AVAssetWriter(contentType: .quickTimeMovie)
     private var bitVideoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
     private var bitVideoCount = 0
@@ -123,28 +125,28 @@ class ScreenRecordManager: NSObject, ObservableObject {
         await refreshAvailableContent()
     }
     
-//    func videoFileLocation() -> URL {
-//        let fileManager = FileManager.default
-//        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-//        let swiftCastFolderPath = (documentsPath.appendingPathComponent("SwiftCast") as NSString).expandingTildeInPath
-//        let videoOutputUrl = URL(fileURLWithPath: swiftCastFolderPath).appendingPathComponent("\(currentStreamId)").appendingPathExtension("mp4")
-//
-//        do {
-//            if !fileManager.fileExists(atPath: swiftCastFolderPath) {
-//                try fileManager.createDirectory(atPath: swiftCastFolderPath, withIntermediateDirectories: true, attributes: nil)
-//                print("ScreenRecordManager: Created 'SwiftCast' Folder.")
-//            }
-//
-//            if fileManager.fileExists(atPath: videoOutputUrl.path) {
-//                try fileManager.removeItem(at: videoOutputUrl)
-//                print("ScreenRecordManager: Deleted existing file with the same path.")
-//            }
-//        } catch {
-//            print("ScreenRecordManager: \(error.localizedDescription)")
-//        }
-//
-//        return videoOutputUrl
-//    }
+    func videoFileLocation() -> URL {
+        let fileManager = FileManager.default
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.moviesDirectory, .userDomainMask, true)[0] as NSString
+        let swiftCastFolderPath = (documentsPath.appendingPathComponent("SwiftCast") as NSString).expandingTildeInPath
+        let videoOutputUrl = URL(fileURLWithPath: swiftCastFolderPath).appendingPathComponent("\(currentStreamId)").appendingPathExtension("mp4")
+
+        do {
+            if !fileManager.fileExists(atPath: swiftCastFolderPath) {
+                try fileManager.createDirectory(atPath: swiftCastFolderPath, withIntermediateDirectories: true, attributes: nil)
+                print("ScreenRecordManager: Created 'SwiftCast' Folder.")
+            }
+
+            if fileManager.fileExists(atPath: videoOutputUrl.path) {
+                try fileManager.removeItem(at: videoOutputUrl)
+                print("ScreenRecordManager: Deleted existing file with the same path.")
+            }
+        } catch {
+            print("ScreenRecordManager: \(error.localizedDescription)")
+        }
+
+        return videoOutputUrl
+    }
     
     func bitVideoFileLocation() -> URL {
         let fileManager = FileManager.default
@@ -229,38 +231,42 @@ class ScreenRecordManager: NSObject, ObservableObject {
             try stream?.addStreamOutput(self, type: .screen, sampleHandlerQueue: screenQueue)
             try await stream?.startCapture()
             
-//            // Create AVAssetWriter input for video, based on the output settings from the Assistant
-//            videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
-//            videoWriterInput.expectsMediaDataInRealTime = true
-            // Create AVAssetWriter input for video, based on the output settings from the Assistant
-            bitVideoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
-            bitVideoWriterInput.expectsMediaDataInRealTime = true
+            videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
+            videoWriterInput.expectsMediaDataInRealTime = true
             
-//            // Create AVAssetWriter for a QuickTime movie file
-//            assetWriter = try AVAssetWriter(url: videoFileLocation(), fileType: .mp4)
+            if isChunked {
+                bitVideoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
+                bitVideoWriterInput.expectsMediaDataInRealTime = true
+            }
             
-//            if assetWriter.canAdd(videoWriterInput) {
-//                assetWriter.add(videoWriterInput)
-//            }
-//
-//            assetWriter.startWriting()
+            // Create AVAssetWriter for a QuickTime movie file
+            assetWriter = try AVAssetWriter(url: videoFileLocation(), fileType: .mp4)
+            
+            if assetWriter.canAdd(videoWriterInput) {
+                assetWriter.add(videoWriterInput)
+            }
+
+            assetWriter.startWriting()
             currentSampleTime = .zero
             bitVideoCount = 0
-            repeat {
-                bitVideoCount += 1
-                bitAssetWriter = try AVAssetWriter(url: bitVideoFileLocation(), fileType: .mp4)
-                if bitAssetWriter.canAdd(bitVideoWriterInput) {
-                    bitAssetWriter.add(bitVideoWriterInput)
-                }
-                bitAssetWriter.startWriting()
-                print("Screen Chunk - Start")
-                try? await Task.sleep(nanoseconds: 1000000000)
-                // Finish writing
-                print("Screen Chunk - Will End")
-                bitVideoWriterInput.markAsFinished()
-                await bitAssetWriter.finishWriting()
-                print("Screen Chunk - Did End")
-            } while isRecording
+            
+            if isChunked {
+                repeat {
+                    bitVideoCount += 1
+                    bitAssetWriter = try AVAssetWriter(url: bitVideoFileLocation(), fileType: .mp4)
+                    if bitAssetWriter.canAdd(bitVideoWriterInput) {
+                        bitAssetWriter.add(bitVideoWriterInput)
+                    }
+                    bitAssetWriter.startWriting()
+                    print("Screen Chunk - Start")
+                    try? await Task.sleep(nanoseconds: 1000000000)
+                    // Finish writing
+                    print("Screen Chunk - Will End")
+                    bitVideoWriterInput.markAsFinished()
+                    await bitAssetWriter.finishWriting()
+                    print("Screen Chunk - Did End")
+                } while isRecording
+            }
         }
     }
     
@@ -277,7 +283,7 @@ class ScreenRecordManager: NSObject, ObservableObject {
         do {
             guard isRecording else { return }
             try await stream?.stopCapture()
-//            await assetWriter.finishWriting()
+            await assetWriter.finishWriting()
             currentStreamId = ""
             isRecording = false
         } catch {
@@ -356,21 +362,18 @@ extension ScreenRecordManager: SCStreamOutput, SCStreamDelegate {
         switch type {
         case .screen:
             screenQueue.async { [self] in
-//                if videoWriterInput.isReadyForMoreMediaData && assetWriter.status == .writing && isRecording {
-//                    assetWriter.startSession(atSourceTime: sourceTime)
-//                    videoWriterInput.append(sampleBuffer)
-//                }
+                if videoWriterInput.isReadyForMoreMediaData && isRecording {
+                    assetWriter.startSession(atSourceTime: sourceTime)
+                    videoWriterInput.append(sampleBuffer)
+                }
 
-                if bitVideoWriterInput.isReadyForMoreMediaData && bitAssetWriter.status == .writing && isRecording {
+                if bitVideoWriterInput.isReadyForMoreMediaData && isRecording {
                     bitAssetWriter.startSession(atSourceTime: sourceTime)
                     bitVideoWriterInput.append(sampleBuffer)
                 }
             }
-            
-
         case .audio:
             break
-            
         @unknown default:
             break
         }

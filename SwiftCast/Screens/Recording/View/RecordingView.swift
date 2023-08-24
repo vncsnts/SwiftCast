@@ -17,20 +17,8 @@ struct RecordingView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Image("swiftCast_logo")
-                    .resizable()
-                    .colorInvert()
-                    .frame(width: 35, height: 25, alignment: .center)
-                Spacer()
-                HeaderBadge(title: screenRecordManager.isRecording ? "REC" : "BETA")
-            }
-            .padding([.leading, .trailing, .bottom])
-            .background(Color("secondaryColor"))
-            
             CameraView(image: cameraManager.frame)
                 .animation(.easeInOut, value: cameraManager.selectedCamera.uniqueId)
-            Spacer()
             MenuView(content: {
                 ForEach(cameraManager.cameraOptions, id: \.uniqueID) { device in
                     Button {
@@ -86,9 +74,7 @@ struct RecordingView: View {
                 
             }
         }
-        .background(.background)
         .frame(width: appManager.fixedFrame.width, height: appManager.fixedFrame.height, alignment: .center)
-        .preferredColorScheme(.light)
         .loadingView(isLoading: $viewModel.isLoading, message: $viewModel.loadingMessage)
         .alert("SwiftCast", isPresented: $viewModel.isOnAlert) {
             Button {
@@ -135,34 +121,38 @@ extension RecordingView {
             viewModel.isLoading = true
             await screenRecordManager.stopRecording()
             await cameraManager.stopRecording()
-            viewModel.isUploading = true
-            viewModel.loadingMessage = "Wrapping up remaining Recording Chunks..."
-            repeat {
-                try? await Task.sleep(nanoseconds: 1.convertToNanoSeconds())
-                guard let screenQueue = await SwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue), let cameraQueue = await SwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
-                if screenQueue.isEmpty && cameraQueue.isEmpty {
-                    viewModel.loadingMessage = "Converting to mp4..."
-                    viewModel.isUploading = false
-                    viewModel.loadingMessage = "Getting Screen Stream URL..."
-                    do {
-                        let screenPublicUrl = try await APIRequestService.shared.finalizeRecordings(chunkUrls: APIQueueService.shared.getScreenChunkUrls())
-                        viewModel.screenPublicUrl = screenPublicUrl
-                        SwiftCastCacheManager.shared.screenPublicUrls.append(screenPublicUrl)
-                        viewModel.loadingMessage = "Getting Camera Stream URL..."
-                        let cameraPublicUrl = try await APIRequestService.shared.finalizeRecordings(chunkUrls: APIQueueService.shared.getCameraChunkUrls())
-                        viewModel.cameraPublicUrl = cameraPublicUrl
-                        SwiftCastCacheManager.shared.cameraPublicUrls.append(screenPublicUrl)
-                        await APIQueueService.shared.removeAllUrls()
+            if cameraManager.isChunked || screenRecordManager.isChunked {
+                viewModel.isUploading = true
+                viewModel.loadingMessage = "Wrapping up remaining Recording Chunks..."
+                repeat {
+                    try? await Task.sleep(nanoseconds: 1.convertToNanoSeconds())
+                    guard let screenQueue = await SwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue), let cameraQueue = await SwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
+                    if screenQueue.isEmpty && cameraQueue.isEmpty {
+                        viewModel.loadingMessage = "Converting to mp4..."
                         viewModel.isUploading = false
-                        viewModel.isLoading = false
-                        viewModel.presentSuccess = true
-                    } catch(let error) {
-                        viewModel.isLoading = false
-                        viewModel.alertMessage = error.localizedDescription
-                        viewModel.isOnAlert = true
+                        viewModel.loadingMessage = "Getting Screen Stream URL..."
+                        do {
+                            let screenPublicUrl = try await APIRequestService.shared.finalizeRecordings(chunkUrls: APIQueueService.shared.getScreenChunkUrls())
+                            viewModel.screenPublicUrl = screenPublicUrl
+                            SwiftCastCacheManager.shared.screenPublicUrls.append(screenPublicUrl)
+                            viewModel.loadingMessage = "Getting Camera Stream URL..."
+                            let cameraPublicUrl = try await APIRequestService.shared.finalizeRecordings(chunkUrls: APIQueueService.shared.getCameraChunkUrls())
+                            viewModel.cameraPublicUrl = cameraPublicUrl
+                            SwiftCastCacheManager.shared.cameraPublicUrls.append(screenPublicUrl)
+                            await APIQueueService.shared.removeAllUrls()
+                            viewModel.isUploading = false
+                            viewModel.isLoading = false
+                            viewModel.presentSuccess = true
+                        } catch(let error) {
+                            viewModel.isLoading = false
+                            viewModel.alertMessage = error.localizedDescription
+                            viewModel.isOnAlert = true
+                        }
                     }
-                }
-            } while viewModel.isUploading
+                } while viewModel.isUploading
+            } else {
+                viewModel.isLoading = false
+            }
         }
     }
 }

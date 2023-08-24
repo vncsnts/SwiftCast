@@ -14,14 +14,15 @@ struct SuccessRecordingView: View {
     
     var body: some View {
         VStack {
-            Text("Done!")
+            Text("Saved Recording.")
             Button {
-                if let url = URL(string: "https://frontend-component-git-mon-1254-impor-ccffb5-swiftCast-interactive.vercel.app/importscreenrecording?url=\(screenUrl)&overlayURL=\(cameraUrl)") {
-                    NSWorkspace.shared.open(url)
-                    dismiss()
-                }
+//                if let url = URL(string: "") {
+//                    NSWorkspace.shared.open(url)
+//                    dismiss()
+//                }
+                dismiss()
             } label: {
-                Text("Send to SwiftCast Project")
+                Text("Done")
             }
             .buttonStyle(.borderedProminent)
 

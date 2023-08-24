@@ -46,10 +46,12 @@ extension APIRequestService {
     /// Send Recording Chunks  to SwiftCast Server
     /// - Parameter id: unique recording ID, probably a UUID
     func sendChunk(chunkFileName: String, chunk: Data) async throws -> String {
+        //Add Api Call to your server
         return ""
     }
     
     func finalizeRecordings(chunkUrls: [String]) async throws -> String {
+        //Add Api Call to your server
         return ""
     }
 }

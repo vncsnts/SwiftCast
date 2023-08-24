@@ -24,17 +24,19 @@ class CameraRecordManager: NSObject, ObservableObject {
         }
     }
     @Published var isRecording = false
+    @Published var isChunked = false
     private var permissionGranted = false
     private let captureSession = AVCaptureSession()
-    //    private var assetWriter = AVAssetWriter(contentType: .quickTimeMovie)
-//    private var currentSessionTime: CMTime = .zero
-    //    private var videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
-    //    private var audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
+    private var assetWriter = AVAssetWriter(contentType: .quickTimeMovie)
+    private var currentSessionTime: CMTime = .zero
+    private var videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
+    private var audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
     private var bitAssetWriter = AVAssetWriter(contentType: .quickTimeMovie)
     private var bitAssetCount = 0
     private var bitVideoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
     private var bitAudioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
-    private let processQueue = DispatchQueue(label: "com.vncsnts.swiftCast.cameraBuffer")
+    private let audioQueue = DispatchQueue(label: "com.vncsnts.swiftCast.audioQueue")
+    private let videoQueue = DispatchQueue(label: "com.vncsnts.swiftCast.videoQueue")
     private let context = CIContext()
     private var currentStreamId = ""
     
@@ -123,12 +125,15 @@ class CameraRecordManager: NSObject, ObservableObject {
             AVVideoHeightKey: resolution.height
         ]
         
-        //        videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
-        //        videoWriterInput.expectsMediaDataInRealTime = true
-        bitVideoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
-        bitVideoWriterInput.expectsMediaDataInRealTime = true
-        //        horizontallyFlipInput(videoWriterInput)
-        horizontallyFlipInput(bitVideoWriterInput)
+        videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+        videoWriterInput.expectsMediaDataInRealTime = true
+        horizontallyFlipInput(videoWriterInput)
+        if isChunked {
+            bitVideoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+            bitVideoWriterInput.expectsMediaDataInRealTime = true
+            horizontallyFlipInput(bitVideoWriterInput)
+        }
+        
         //Audio
         guard let audioDevice = audioOptions.first(where: {$0.uniqueID == selectedAudio.uniqueId}) else { return }
         guard let audioDeviceInput = try? AVCaptureDeviceInput(device: audioDevice) else { return }
@@ -145,13 +150,18 @@ class CameraRecordManager: NSObject, ObservableObject {
         captureSession.addOutput(videoOutput)
         captureSession.addOutput(audioOutput)
         
-        audioOutput.setSampleBufferDelegate(self, queue: processQueue)
-        videoOutput.setSampleBufferDelegate(self, queue: processQueue)
+        audioOutput.setSampleBufferDelegate(self, queue: audioQueue)
+        videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
         
         let audioSettings = audioOutput.recommendedAudioSettingsForAssetWriter(writingTo: .wav)
         
-        bitAudioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
-        bitAudioWriterInput.expectsMediaDataInRealTime = true
+        audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+        audioWriterInput.expectsMediaDataInRealTime = true
+        
+        if isChunked {
+            bitAudioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+            bitAudioWriterInput.expectsMediaDataInRealTime = true
+        }
     }
     
     func horizontallyFlipInput(_ assetInput: AVAssetWriterInput) {
@@ -178,35 +188,38 @@ class CameraRecordManager: NSObject, ObservableObject {
     
     func setupWriter() async {
         Task {
-            //            assetWriter = try AVAssetWriter(url: videoFileLocation(), fileType: .mp4)
-            //            if assetWriter.canAdd(videoWriterInput) {
-            //                assetWriter.add(videoWriterInput)
-            //            }
-            //            if assetWriter.canAdd(audioWriterInput) {
-            //                assetWriter.add(audioWriterInput)
-            //            }
+            assetWriter = try AVAssetWriter(url: videoFileLocation(), fileType: .mp4)
+            if assetWriter.canAdd(videoWriterInput) {
+                assetWriter.add(videoWriterInput)
+            }
+            if assetWriter.canAdd(audioWriterInput) {
+                assetWriter.add(audioWriterInput)
+            }
             
-            //            assetWriter.startWriting()
-//            currentSessionTime = .zero
+            assetWriter.startWriting()
+            currentSessionTime = .zero
             bitAssetCount = 0
-            repeat {
-                bitAssetCount += 1
-                bitAssetWriter = try AVAssetWriter(url: bitFileLocation(), fileType: .mp4)
-                
-                if bitAssetWriter.canAdd(bitVideoWriterInput) {
-                    bitAssetWriter.add(bitVideoWriterInput)
-                }
-                if bitAssetWriter.canAdd(bitAudioWriterInput) {
-                    bitAssetWriter.add(bitAudioWriterInput)
-                }
-                
-                print("Camera Chunk - Start")
-                try? await Task.sleep(nanoseconds: 1000000000)
-                print("Camera Chunk - Will End")
-                bitAudioWriterInput.markAsFinished()
-                bitVideoWriterInput.markAsFinished()
-                await bitAssetWriter.finishWriting()
-            } while isRecording
+            if isChunked {
+                repeat {
+                    bitAssetCount += 1
+                    bitAssetWriter = try AVAssetWriter(url: bitFileLocation(), fileType: .mp4)
+                    
+                    if bitAssetWriter.canAdd(bitVideoWriterInput) {
+                        bitAssetWriter.add(bitVideoWriterInput)
+                    }
+                    if bitAssetWriter.canAdd(bitAudioWriterInput) {
+                        bitAssetWriter.add(bitAudioWriterInput)
+                    }
+                    
+                    bitAssetWriter.startWriting()
+                    print("Camera Chunk - Start")
+                    try? await Task.sleep(nanoseconds: 1000000000)
+                    print("Camera Chunk - Will End")
+                    bitAudioWriterInput.markAsFinished()
+                    bitVideoWriterInput.markAsFinished()
+                    await bitAssetWriter.finishWriting()
+                } while isRecording
+            }
         }
     }
     
@@ -218,7 +231,7 @@ class CameraRecordManager: NSObject, ObservableObject {
     
     func stopRecording() async {
         isRecording = false
-        //        await assetWriter.finishWriting()
+        await assetWriter.finishWriting()
         currentStreamId = ""
     }
     
@@ -245,67 +258,64 @@ class CameraRecordManager: NSObject, ObservableObject {
         return videoOutputUrl
     }
     
-    //    func videoFileLocation() -> URL {
-    //        let fileManager = FileManager.default
-    //        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-    //        let swiftCastFolderPath = (documentsPath.appendingPathComponent("SwiftCast") as NSString).expandingTildeInPath
-    //        let videoOutputUrl = URL(fileURLWithPath: swiftCastFolderPath).appendingPathComponent("\(currentStreamId)").appendingPathExtension("mp4")
-    //
-    //        do {
-    //            if !fileManager.fileExists(atPath: swiftCastFolderPath) {
-    //                try fileManager.createDirectory(atPath: swiftCastFolderPath, withIntermediateDirectories: true, attributes: nil)
-    //                print("CameraRecordManager: Created 'SwiftCast' Folder.")
-    //            }
-    //
-    //            if fileManager.fileExists(atPath: videoOutputUrl.path) {
-    //                try fileManager.removeItem(at: videoOutputUrl)
-    //                print("CameraRecordManager: Deleted existing file with the same path.")
-    //            }
-    //        } catch {
-    //            print("CameraRecordManager: \(error.localizedDescription)")
-    //        }
-    //
-    //        return videoOutputUrl
-    //    }
+    func videoFileLocation() -> URL {
+        let fileManager = FileManager.default
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.moviesDirectory, .userDomainMask, true)[0] as NSString
+        let swiftCastFolderPath = (documentsPath.appendingPathComponent("SwiftCast") as NSString).expandingTildeInPath
+        let videoOutputUrl = URL(fileURLWithPath: swiftCastFolderPath).appendingPathComponent("\(currentStreamId)").appendingPathExtension("mp4")
+        
+        do {
+            if !fileManager.fileExists(atPath: swiftCastFolderPath) {
+                try fileManager.createDirectory(atPath: swiftCastFolderPath, withIntermediateDirectories: true, attributes: nil)
+                print("CameraRecordManager: Created 'SwiftCast' Folder.")
+            }
+            
+            if fileManager.fileExists(atPath: videoOutputUrl.path) {
+                try fileManager.removeItem(at: videoOutputUrl)
+                print("CameraRecordManager: Deleted existing file with the same path.")
+            }
+        } catch {
+            print("CameraRecordManager: \(error.localizedDescription)")
+        }
+        
+        return videoOutputUrl
+    }
 }
 
 extension CameraRecordManager: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        processQueue.async {
-            if CMSampleBufferDataIsReady(sampleBuffer) {
-                guard sampleBuffer.isValid else { return }
-                let sourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-    //            self.currentSessionTime = sourceTime
-                if output.isKind(of: AVCaptureVideoDataOutput.self) {
-                    //                if self.videoWriterInput.isReadyForMoreMediaData && self.assetWriter.status == .writing && self.isRecording {
-                    //                    self.assetWriter.startSession(atSourceTime: sourceTime)
-                    //                    self.videoWriterInput.append(sampleBuffer)
-                    //                }
-                    
-                    if self.bitVideoWriterInput.isReadyForMoreMediaData && self.isRecording {
-                        self.bitAssetWriter.startWriting()
-                        self.bitAssetWriter.startSession(atSourceTime: sourceTime)
-                        self.bitVideoWriterInput.append(sampleBuffer)
-                    }
-                    
-                    guard let cgImage = self.imageFromSampleBuffer(sampleBuffer: sampleBuffer) else { return }
-                    DispatchQueue.main.async {
-                        self.frame = cgImage
-                    }
-                } else if output.isKind(of: AVCaptureAudioDataOutput.self) {
-                    //                if self.audioWriterInput.isReadyForMoreMediaData && self.assetWriter.status == .writing && self.isRecording {
-                    //                    self.assetWriter.startSession(atSourceTime: sourceTime)
-                    //                    self.audioWriterInput.append(sampleBuffer)
-                    //                }
-                    
-                    if self.bitAudioWriterInput.isReadyForMoreMediaData && self.isRecording {
-                        self.bitAssetWriter.startWriting()
-                        self.bitAssetWriter.startSession(atSourceTime: sourceTime)
-                        self.bitAudioWriterInput.append(sampleBuffer)
-                    }
+        guard sampleBuffer.isValid else { return }
+        let sourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        self.currentSessionTime = sourceTime
+        if output.isKind(of: AVCaptureVideoDataOutput.self) {
+            videoQueue.async {
+                if self.videoWriterInput.isReadyForMoreMediaData && self.isRecording {
+                    self.assetWriter.startSession(atSourceTime: sourceTime)
+                    self.videoWriterInput.append(sampleBuffer)
+                }
+                
+                if self.bitVideoWriterInput.isReadyForMoreMediaData && self.isRecording && self.isChunked {
+                    self.bitAssetWriter.startSession(atSourceTime: sourceTime)
+                    self.bitVideoWriterInput.append(sampleBuffer)
                 }
             }
             
+            guard let cgImage = self.imageFromSampleBuffer(sampleBuffer: sampleBuffer) else { return }
+            DispatchQueue.main.async {
+                self.frame = cgImage
+            }
+        } else if output.isKind(of: AVCaptureAudioDataOutput.self) {
+            audioQueue.async {
+                if self.audioWriterInput.isReadyForMoreMediaData && self.isRecording {
+                    self.assetWriter.startSession(atSourceTime: sourceTime)
+                    self.audioWriterInput.append(sampleBuffer)
+                }
+                
+                if self.bitAudioWriterInput.isReadyForMoreMediaData && self.isRecording && self.isChunked {
+                    self.bitAssetWriter.startSession(atSourceTime: sourceTime)
+                    self.bitAudioWriterInput.append(sampleBuffer)
+                }
+            }
         }
     }
     

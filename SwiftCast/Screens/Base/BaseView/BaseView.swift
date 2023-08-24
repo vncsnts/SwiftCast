@@ -25,22 +25,7 @@ struct BaseView: View {
         }
         .onAppear {
             Task {
-//                guard let hasToken = await APIRequestService.shared.accessToken else {
-//                    appManager.appViewState = .login
-//                    return
-//                }
-                
-//                let jwt = try decode(jwt: hasToken)
-//                guard let expirationDate = jwt.expiresAt else { return }
-                
-//                if expirationDate < Date() {
-//                    await APIRequestService.shared.setAccessToken(token: "")
-//                    appManager.appViewState = .login
-//                    viewModel.alertMessage = "Your token has expired, please login with a new token."
-//                    viewModel.isOnAlert = true
-//                } else {
-                    appManager.appViewState = .startRecord
-//                }
+                appManager.appViewState = .startRecord
             }
         }
         .handlesExternalEvents(preferring: ["swiftCast"], allowing: ["*"]) // activate existing window if exists

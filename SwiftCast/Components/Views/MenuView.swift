@@ -20,7 +20,7 @@ struct MenuView<Content : View>: View {
         .padding(.horizontal)
         .frame(height: 44)
         .menuStyle(.borderlessButton)
-        .background(.background)
+        .background(.tertiary)
         .cornerRadius(10)
         .padding()
         .shadow(radius: 2)

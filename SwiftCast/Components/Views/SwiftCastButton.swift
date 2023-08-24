@@ -49,7 +49,7 @@ struct SwiftCastButton: View {
                     .foregroundColor(.white)
                     .frame(height: 44)
                     .frame(maxWidth: .infinity)
-                    .background(Color("cancelColor"))
+                    .background(.red)
                     .cornerRadius(10)
                     .shadow(radius: 2)
             } else {

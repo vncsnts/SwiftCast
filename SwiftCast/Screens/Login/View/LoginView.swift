@@ -13,24 +13,18 @@ struct LoginView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Image("swiftCast_logo")
-                    .resizable()
-                    .colorInvert()
-                    .frame(width: 35, height: 25, alignment: .center)
+                Image(systemName: "camera.filters")
                 Spacer()
-                
-                HeaderBadge(title: "BETA")
             }
             .padding([.leading, .trailing, .bottom])
-            .background(Color("secondaryColor"))
             
             Spacer()
             
             SwiftCastButton(title: "Sign Up")
             SwiftCastButton(action: {
-                if let url = URL(string: "https://frontend-component-6y3kus7ek-swiftCast-interactive.vercel.app/desktoplogin") {
-                    NSWorkspace.shared.open(url)
-                }
+//                if let url = URL(string: "") {
+//                    NSWorkspace.shared.open(url)
+//                }
             }, title: "Login")
 
             Spacer()
