@@ -8,25 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8A1ADBB52DE9864100F17A16 /* CameraGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1ADBB42DE9864100F17A16 /* CameraGameView.swift */; };
-		8A5E02842A8D2DEC00F73CAD /* SwiftCastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02832A8D2DEC00F73CAD /* SwiftCastTests.swift */; };
-		8A5E028E2A8D2DEC00F73CAD /* SwiftCastUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E028D2A8D2DEC00F73CAD /* SwiftCastUITests.swift */; };
-		8A5E02902A8D2DEC00F73CAD /* SwiftCastUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E028F2A8D2DEC00F73CAD /* SwiftCastUITestsLaunchTests.swift */; };
+		8A1ADBB92DE9C9C200F17A16 /* SoundEffectsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1ADBB82DE9C9C200F17A16 /* SoundEffectsManager.swift */; };
+		8A1ADBBB2DE9CF9D00F17A16 /* CameraGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1ADBBA2DE9CF9D00F17A16 /* CameraGameViewModel.swift */; };
 		8A5E02CD2A8D2E0400F73CAD /* EllieGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E029D2A8D2E0300F73CAD /* EllieGame.swift */; };
 		8A5E02CE2A8D2E0400F73CAD /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E029E2A8D2E0300F73CAD /* StatusBarController.swift */; };
 		8A5E02D02A8D2E0400F73CAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A5E02A12A8D2E0400F73CAD /* Assets.xcassets */; };
 		8A5E02D22A8D2E0400F73CAD /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02A42A8D2E0400F73CAD /* AppManager.swift */; };
 		8A5E02D42A8D2E0400F73CAD /* CameraRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02A62A8D2E0400F73CAD /* CameraRecordManager.swift */; };
-		8A5E02D72A8D2E0400F73CAD /* RecordingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02AC2A8D2E0400F73CAD /* RecordingViewModel.swift */; };
-		8A5E02D82A8D2E0400F73CAD /* RecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02AE2A8D2E0400F73CAD /* RecordingView.swift */; };
-		8A5E02D92A8D2E0400F73CAD /* SuccessRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02AF2A8D2E0400F73CAD /* SuccessRecordingView.swift */; };
-		8A5E02DB2A8D2E0400F73CAD /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02B52A8D2E0400F73CAD /* BaseView.swift */; };
-		8A5E02DC2A8D2E0400F73CAD /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02B72A8D2E0400F73CAD /* BaseViewModel.swift */; };
-		8A5E02DD2A8D2E0400F73CAD /* SwiftCastButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BA2A8D2E0400F73CAD /* SwiftCastButton.swift */; };
-		8A5E02DE2A8D2E0400F73CAD /* MenuButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BB2A8D2E0400F73CAD /* MenuButtonView.swift */; };
-		8A5E02DF2A8D2E0400F73CAD /* HeaderBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BC2A8D2E0400F73CAD /* HeaderBadge.swift */; };
-		8A5E02E02A8D2E0400F73CAD /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BD2A8D2E0400F73CAD /* CameraView.swift */; };
-		8A5E02E12A8D2E0400F73CAD /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BE2A8D2E0400F73CAD /* MenuView.swift */; };
-		8A5E02E22A8D2E0400F73CAD /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BF2A8D2E0400F73CAD /* CaptureView.swift */; };
 		8A5E02E32A8D2E0400F73CAD /* FloatingViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02C12A8D2E0400F73CAD /* FloatingViewModifier.swift */; };
 		8A5E02E42A8D2E0400F73CAD /* MaterialViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02C22A8D2E0400F73CAD /* MaterialViewModifier.swift */; };
 		8A5E02E52A8D2E0400F73CAD /* LoadingViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02C32A8D2E0400F73CAD /* LoadingViewModifier.swift */; };
@@ -34,71 +22,25 @@
 		8AE6B3A12A8D3105007E4B29 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE6B3A02A8D3105007E4B29 /* Error.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		8A5E02802A8D2DEC00F73CAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A5E02662A8D2DEC00F73CAD /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8A5E026D2A8D2DEC00F73CAD;
-			remoteInfo = SwiftCast;
-		};
-		8A5E028A2A8D2DEC00F73CAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A5E02662A8D2DEC00F73CAD /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8A5E026D2A8D2DEC00F73CAD;
-			remoteInfo = SwiftCast;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		8A1ADBB42DE9864100F17A16 /* CameraGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraGameView.swift; sourceTree = "<group>"; };
+		8A1ADBB82DE9C9C200F17A16 /* SoundEffectsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffectsManager.swift; sourceTree = "<group>"; };
+		8A1ADBBA2DE9CF9D00F17A16 /* CameraGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraGameViewModel.swift; sourceTree = "<group>"; };
 		8A5E026E2A8D2DEC00F73CAD /* EllieGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EllieGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A5E027F2A8D2DEC00F73CAD /* EllieGameTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EllieGameTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A5E02832A8D2DEC00F73CAD /* SwiftCastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCastTests.swift; sourceTree = "<group>"; };
-		8A5E02892A8D2DEC00F73CAD /* EllieGameUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EllieGameUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A5E028D2A8D2DEC00F73CAD /* SwiftCastUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCastUITests.swift; sourceTree = "<group>"; };
-		8A5E028F2A8D2DEC00F73CAD /* SwiftCastUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCastUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8A5E029D2A8D2E0300F73CAD /* EllieGame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllieGame.swift; sourceTree = "<group>"; };
 		8A5E029E2A8D2E0300F73CAD /* StatusBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		8A5E02A12A8D2E0400F73CAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8A5E02A42A8D2E0400F73CAD /* AppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		8A5E02A62A8D2E0400F73CAD /* CameraRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraRecordManager.swift; sourceTree = "<group>"; };
-		8A5E02AC2A8D2E0400F73CAD /* RecordingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordingViewModel.swift; sourceTree = "<group>"; };
-		8A5E02AE2A8D2E0400F73CAD /* RecordingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordingView.swift; sourceTree = "<group>"; };
-		8A5E02AF2A8D2E0400F73CAD /* SuccessRecordingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuccessRecordingView.swift; sourceTree = "<group>"; };
-		8A5E02B52A8D2E0400F73CAD /* BaseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
-		8A5E02B72A8D2E0400F73CAD /* BaseViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
-		8A5E02BA2A8D2E0400F73CAD /* SwiftCastButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCastButton.swift; sourceTree = "<group>"; };
-		8A5E02BB2A8D2E0400F73CAD /* MenuButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuButtonView.swift; sourceTree = "<group>"; };
-		8A5E02BC2A8D2E0400F73CAD /* HeaderBadge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderBadge.swift; sourceTree = "<group>"; };
-		8A5E02BD2A8D2E0400F73CAD /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
-		8A5E02BE2A8D2E0400F73CAD /* MenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
-		8A5E02BF2A8D2E0400F73CAD /* CaptureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureView.swift; sourceTree = "<group>"; };
 		8A5E02C12A8D2E0400F73CAD /* FloatingViewModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingViewModifier.swift; sourceTree = "<group>"; };
 		8A5E02C22A8D2E0400F73CAD /* MaterialViewModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaterialViewModifier.swift; sourceTree = "<group>"; };
 		8A5E02C32A8D2E0400F73CAD /* LoadingViewModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingViewModifier.swift; sourceTree = "<group>"; };
-		8A5E02C42A8D2E0400F73CAD /* SwiftCast.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = SwiftCast.entitlements; sourceTree = "<group>"; };
 		8A5E02C92A8D2E0400F73CAD /* Int.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 		8AE6B3A02A8D3105007E4B29 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		8A5E026B2A8D2DEC00F73CAD /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A5E027C2A8D2DEC00F73CAD /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A5E02862A8D2DEC00F73CAD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -112,8 +54,6 @@
 			isa = PBXGroup;
 			children = (
 				8A5E02702A8D2DEC00F73CAD /* EllieGame */,
-				8A5E02822A8D2DEC00F73CAD /* EllieGameTests */,
-				8A5E028C2A8D2DEC00F73CAD /* EllieGameUITests */,
 				8A5E026F2A8D2DEC00F73CAD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -122,8 +62,6 @@
 			isa = PBXGroup;
 			children = (
 				8A5E026E2A8D2DEC00F73CAD /* EllieGame.app */,
-				8A5E027F2A8D2DEC00F73CAD /* EllieGameTests.xctest */,
-				8A5E02892A8D2DEC00F73CAD /* EllieGameUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,27 +74,8 @@
 				8A5E02C82A8D2E0400F73CAD /* Extensions */,
 				8A5E02A32A8D2E0400F73CAD /* Managers */,
 				8A5E02A02A8D2E0400F73CAD /* Resources */,
-				8A5E02A92A8D2E0400F73CAD /* Screens */,
-				8A5E02C42A8D2E0400F73CAD /* SwiftCast.entitlements */,
 			);
 			path = EllieGame;
-			sourceTree = "<group>";
-		};
-		8A5E02822A8D2DEC00F73CAD /* EllieGameTests */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02832A8D2DEC00F73CAD /* SwiftCastTests.swift */,
-			);
-			path = EllieGameTests;
-			sourceTree = "<group>";
-		};
-		8A5E028C2A8D2DEC00F73CAD /* EllieGameUITests */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E028D2A8D2DEC00F73CAD /* SwiftCastUITests.swift */,
-				8A5E028F2A8D2DEC00F73CAD /* SwiftCastUITestsLaunchTests.swift */,
-			);
-			path = EllieGameUITests;
 			sourceTree = "<group>";
 		};
 		8A5E029C2A8D2E0300F73CAD /* App */ = {
@@ -181,68 +100,9 @@
 			children = (
 				8A5E02A42A8D2E0400F73CAD /* AppManager.swift */,
 				8A5E02A62A8D2E0400F73CAD /* CameraRecordManager.swift */,
+				8A1ADBB82DE9C9C200F17A16 /* SoundEffectsManager.swift */,
 			);
 			path = Managers;
-			sourceTree = "<group>";
-		};
-		8A5E02A92A8D2E0400F73CAD /* Screens */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02AA2A8D2E0400F73CAD /* Recording */,
-				8A5E02B32A8D2E0400F73CAD /* Base */,
-			);
-			path = Screens;
-			sourceTree = "<group>";
-		};
-		8A5E02AA2A8D2E0400F73CAD /* Recording */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02AB2A8D2E0400F73CAD /* ViewModel */,
-				8A5E02AD2A8D2E0400F73CAD /* View */,
-			);
-			path = Recording;
-			sourceTree = "<group>";
-		};
-		8A5E02AB2A8D2E0400F73CAD /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02AC2A8D2E0400F73CAD /* RecordingViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		8A5E02AD2A8D2E0400F73CAD /* View */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02AE2A8D2E0400F73CAD /* RecordingView.swift */,
-				8A5E02AF2A8D2E0400F73CAD /* SuccessRecordingView.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		8A5E02B32A8D2E0400F73CAD /* Base */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02B42A8D2E0400F73CAD /* BaseView */,
-				8A5E02B62A8D2E0400F73CAD /* BaseViewModel */,
-			);
-			path = Base;
-			sourceTree = "<group>";
-		};
-		8A5E02B42A8D2E0400F73CAD /* BaseView */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02B52A8D2E0400F73CAD /* BaseView.swift */,
-			);
-			path = BaseView;
-			sourceTree = "<group>";
-		};
-		8A5E02B62A8D2E0400F73CAD /* BaseViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				8A5E02B72A8D2E0400F73CAD /* BaseViewModel.swift */,
-			);
-			path = BaseViewModel;
 			sourceTree = "<group>";
 		};
 		8A5E02B82A8D2E0400F73CAD /* Components */ = {
@@ -258,12 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				8A1ADBB42DE9864100F17A16 /* CameraGameView.swift */,
-				8A5E02BA2A8D2E0400F73CAD /* SwiftCastButton.swift */,
-				8A5E02BB2A8D2E0400F73CAD /* MenuButtonView.swift */,
-				8A5E02BC2A8D2E0400F73CAD /* HeaderBadge.swift */,
-				8A5E02BD2A8D2E0400F73CAD /* CameraView.swift */,
-				8A5E02BE2A8D2E0400F73CAD /* MenuView.swift */,
-				8A5E02BF2A8D2E0400F73CAD /* CaptureView.swift */,
+				8A1ADBBA2DE9CF9D00F17A16 /* CameraGameViewModel.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -307,42 +162,6 @@
 			productReference = 8A5E026E2A8D2DEC00F73CAD /* EllieGame.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8A5E027E2A8D2DEC00F73CAD /* EllieGameTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8A5E02962A8D2DEC00F73CAD /* Build configuration list for PBXNativeTarget "EllieGameTests" */;
-			buildPhases = (
-				8A5E027B2A8D2DEC00F73CAD /* Sources */,
-				8A5E027C2A8D2DEC00F73CAD /* Frameworks */,
-				8A5E027D2A8D2DEC00F73CAD /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				8A5E02812A8D2DEC00F73CAD /* PBXTargetDependency */,
-			);
-			name = EllieGameTests;
-			productName = SwiftCastTests;
-			productReference = 8A5E027F2A8D2DEC00F73CAD /* EllieGameTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		8A5E02882A8D2DEC00F73CAD /* EllieGameUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8A5E02992A8D2DEC00F73CAD /* Build configuration list for PBXNativeTarget "EllieGameUITests" */;
-			buildPhases = (
-				8A5E02852A8D2DEC00F73CAD /* Sources */,
-				8A5E02862A8D2DEC00F73CAD /* Frameworks */,
-				8A5E02872A8D2DEC00F73CAD /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				8A5E028B2A8D2DEC00F73CAD /* PBXTargetDependency */,
-			);
-			name = EllieGameUITests;
-			productName = SwiftCastUITests;
-			productReference = 8A5E02892A8D2DEC00F73CAD /* EllieGameUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -355,14 +174,6 @@
 				TargetAttributes = {
 					8A5E026D2A8D2DEC00F73CAD = {
 						CreatedOnToolsVersion = 14.3.1;
-					};
-					8A5E027E2A8D2DEC00F73CAD = {
-						CreatedOnToolsVersion = 14.3.1;
-						TestTargetID = 8A5E026D2A8D2DEC00F73CAD;
-					};
-					8A5E02882A8D2DEC00F73CAD = {
-						CreatedOnToolsVersion = 14.3.1;
-						TestTargetID = 8A5E026D2A8D2DEC00F73CAD;
 					};
 				};
 			};
@@ -380,8 +191,6 @@
 			projectRoot = "";
 			targets = (
 				8A5E026D2A8D2DEC00F73CAD /* EllieGame */,
-				8A5E027E2A8D2DEC00F73CAD /* EllieGameTests */,
-				8A5E02882A8D2DEC00F73CAD /* EllieGameUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -395,20 +204,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8A5E027D2A8D2DEC00F73CAD /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A5E02872A8D2DEC00F73CAD /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -416,61 +211,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A5E02D92A8D2E0400F73CAD /* SuccessRecordingView.swift in Sources */,
 				8A5E02E82A8D2E0400F73CAD /* Int.swift in Sources */,
-				8A5E02DB2A8D2E0400F73CAD /* BaseView.swift in Sources */,
 				8A1ADBB52DE9864100F17A16 /* CameraGameView.swift in Sources */,
+				8A1ADBB92DE9C9C200F17A16 /* SoundEffectsManager.swift in Sources */,
 				8A5E02E42A8D2E0400F73CAD /* MaterialViewModifier.swift in Sources */,
-				8A5E02E12A8D2E0400F73CAD /* MenuView.swift in Sources */,
-				8A5E02E02A8D2E0400F73CAD /* CameraView.swift in Sources */,
-				8A5E02DC2A8D2E0400F73CAD /* BaseViewModel.swift in Sources */,
 				8A5E02E52A8D2E0400F73CAD /* LoadingViewModifier.swift in Sources */,
-				8A5E02D72A8D2E0400F73CAD /* RecordingViewModel.swift in Sources */,
 				8A5E02D42A8D2E0400F73CAD /* CameraRecordManager.swift in Sources */,
 				8A5E02CD2A8D2E0400F73CAD /* EllieGame.swift in Sources */,
-				8A5E02DF2A8D2E0400F73CAD /* HeaderBadge.swift in Sources */,
-				8A5E02D82A8D2E0400F73CAD /* RecordingView.swift in Sources */,
 				8AE6B3A12A8D3105007E4B29 /* Error.swift in Sources */,
-				8A5E02DE2A8D2E0400F73CAD /* MenuButtonView.swift in Sources */,
 				8A5E02CE2A8D2E0400F73CAD /* StatusBarController.swift in Sources */,
 				8A5E02E32A8D2E0400F73CAD /* FloatingViewModifier.swift in Sources */,
-				8A5E02DD2A8D2E0400F73CAD /* SwiftCastButton.swift in Sources */,
 				8A5E02D22A8D2E0400F73CAD /* AppManager.swift in Sources */,
-				8A5E02E22A8D2E0400F73CAD /* CaptureView.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A5E027B2A8D2DEC00F73CAD /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8A5E02842A8D2DEC00F73CAD /* SwiftCastTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A5E02852A8D2DEC00F73CAD /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8A5E028E2A8D2DEC00F73CAD /* SwiftCastUITests.swift in Sources */,
-				8A5E02902A8D2DEC00F73CAD /* SwiftCastUITestsLaunchTests.swift in Sources */,
+				8A1ADBBB2DE9CF9D00F17A16 /* CameraGameViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8A5E02812A8D2DEC00F73CAD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8A5E026D2A8D2DEC00F73CAD /* EllieGame */;
-			targetProxy = 8A5E02802A8D2DEC00F73CAD /* PBXContainerItemProxy */;
-		};
-		8A5E028B2A8D2DEC00F73CAD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8A5E026D2A8D2DEC00F73CAD /* EllieGame */;
-			targetProxy = 8A5E028A2A8D2DEC00F73CAD /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		8A5E02912A8D2DEC00F73CAD /* Debug */ = {
@@ -650,74 +406,6 @@
 			};
 			name = Release;
 		};
-		8A5E02972A8D2DEC00F73CAD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.vncsnts..SwiftCastTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EllieGame.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EllieGame";
-			};
-			name = Debug;
-		};
-		8A5E02982A8D2DEC00F73CAD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.vncsnts..SwiftCastTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EllieGame.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EllieGame";
-			};
-			name = Release;
-		};
-		8A5E029A2A8D2DEC00F73CAD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.vncsnts..SwiftCastUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = SwiftCast;
-			};
-			name = Debug;
-		};
-		8A5E029B2A8D2DEC00F73CAD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.vncsnts..SwiftCastUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = SwiftCast;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -735,24 +423,6 @@
 			buildConfigurations = (
 				8A5E02942A8D2DEC00F73CAD /* Debug */,
 				8A5E02952A8D2DEC00F73CAD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8A5E02962A8D2DEC00F73CAD /* Build configuration list for PBXNativeTarget "EllieGameTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8A5E02972A8D2DEC00F73CAD /* Debug */,
-				8A5E02982A8D2DEC00F73CAD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8A5E02992A8D2DEC00F73CAD /* Build configuration list for PBXNativeTarget "EllieGameUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8A5E029A2A8D2DEC00F73CAD /* Debug */,
-				8A5E029B2A8D2DEC00F73CAD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

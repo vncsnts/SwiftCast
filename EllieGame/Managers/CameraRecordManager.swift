@@ -36,6 +36,8 @@ class CameraRecordManager: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isChunked = false
     /// The detected hand position.
     @Published var handPosition: CGPoint? = nil
+    /// The detected hand points for collision detection
+    @Published var handPoints: [VNHumanHandPoseObservation.JointName: VNRecognizedPoint]? = nil
 
     // MARK: - Private Properties
     private var permissionGranted = false
@@ -54,11 +56,15 @@ class CameraRecordManager: NSObject, ObservableObject, @unchecked Sendable {
     private var currentStreamId = ""
     private var handPoseRequest = VNDetectHumanHandPoseRequest()
     private var frameCount = 0
-    private let visionFrameInterval = 5 // Only process every 5th frame
+    private let visionFrameInterval = 2 // Process every 2nd frame for better performance
+    private let minConfidence: Float = 0.5 // Increased confidence threshold for more accurate detection
 
     // MARK: - Lifecycle
     override init() {
         super.init()
+        // Configure hand pose request for better accuracy
+        handPoseRequest.maximumHandCount = 1 // Only detect one hand for better performance
+        handPoseRequest.revision = VNDetectHumanHandPoseRequestRevision1 // Use latest revision
         checkPermission()
         self.detectAvailableCaptureDevices()
     }
@@ -285,41 +291,48 @@ class CameraRecordManager: NSObject, ObservableObject, @unchecked Sendable {
     private func processFrameForHandPose(_ sampleBuffer: CMSampleBuffer) {
         frameCount += 1
         if frameCount % visionFrameInterval != 0 { return }
-        print("Processing frame \(frameCount) for hand pose...")
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { 
-            print("Failed to get pixel buffer from sample buffer")
-            return 
-        }
-        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:])
+        
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        
+        // Create image request handler with correct orientation
+        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, 
+                                          orientation: .up, // Use .up for correct orientation
+                                          options: [:])
         do {
             try handler.perform([handPoseRequest])
-            print("Vision request performed.")
             if let observation = handPoseRequest.results?.first {
-                print("Vision found a hand observation.")
                 let points = try observation.recognizedPoints(.all)
-                if let wrist = points[.wrist], wrist.confidence > 0.3 {
-                     print("Vision found a wrist with confidence \(wrist.confidence).")
-                    // wrist.location is in normalized coordinates (0-1)
-                    // Update on the main actor
+                
+                // Get key points with high confidence
+                let wrist = points[.wrist]
+                let indexFingerMCP = points[.indexMCP] // Index finger knuckle
+                let middleFingerMCP = points[.middleMCP] // Middle finger knuckle
+                
+                // Only update if we have good confidence in key points
+                if let wrist = wrist, wrist.confidence > minConfidence,
+                   let indexMCP = indexFingerMCP, indexMCP.confidence > minConfidence,
+                   let middleMCP = middleFingerMCP, middleMCP.confidence > minConfidence {
+                    
+                    // Calculate hand position as average of key points for better stability
+                    let avgX = (wrist.location.x + indexMCP.location.x + middleMCP.location.x) / 3
+                    let avgY = (wrist.location.y + indexMCP.location.y + middleMCP.location.y) / 3
+                    
                     Task { @MainActor in
-                         self.handPosition = CGPoint(x: wrist.location.x, y: 1 - wrist.location.y)
-                         print("Updated handPosition to \(String(describing: self.handPosition)) on MainActor.")
+                        // Flip both x and y coordinates to match the camera preview
+                        self.handPosition = CGPoint(x: 1.0 - avgX, y: 1.0 - avgY)
+                        self.handPoints = points
                     }
                 } else {
-                    print("Vision found observation but no wrist with sufficient confidence.")
-                    // If no hand is detected, set handPosition to nil on the main actor
-                     Task { @MainActor in
-                         self.handPosition = nil
-                         print("Updated handPosition to nil on MainActor (no wrist).")
-                     }
+                    Task { @MainActor in
+                        self.handPosition = nil
+                        self.handPoints = nil
+                    }
                 }
             } else {
-                print("Vision found no hand observations.")
-                // If no hand is detected, set handPosition to nil on the main actor
-                 Task { @MainActor in
-                     self.handPosition = nil
-                     print("Updated handPosition to nil on MainActor (no observation).")
-                 }
+                Task { @MainActor in
+                    self.handPosition = nil
+                    self.handPoints = nil
+                }
             }
         } catch {
             print("Vision error during perform: \(error)")
