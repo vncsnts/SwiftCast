@@ -14,12 +14,15 @@ struct SwiftCastApp: App {
     var body: some Scene {
         WindowGroup("main") {
             BaseView()
+                .theme(SwiftCastTheme())
+                .windowGlassBackground()
                 .environmentObject(appDelegate.screenRecordManager)
                 .environmentObject(appDelegate.cameraRecordManager)
                 .environmentObject(appDelegate.appManager)
                 .environmentObject(appDelegate)
         }
         .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
         .handlesExternalEvents(matching: ["swiftCast"]) // create new window if doesn't exist
     }
 }

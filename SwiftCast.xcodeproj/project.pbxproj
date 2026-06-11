@@ -26,7 +26,6 @@
 		8A5E02DB2A8D2E0400F73CAD /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02B52A8D2E0400F73CAD /* BaseView.swift */; };
 		8A5E02DC2A8D2E0400F73CAD /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02B72A8D2E0400F73CAD /* BaseViewModel.swift */; };
 		8A5E02DD2A8D2E0400F73CAD /* SwiftCastButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BA2A8D2E0400F73CAD /* SwiftCastButton.swift */; };
-		8A5E02DE2A8D2E0400F73CAD /* MenuButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BB2A8D2E0400F73CAD /* MenuButtonView.swift */; };
 		8A5E02DF2A8D2E0400F73CAD /* HeaderBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BC2A8D2E0400F73CAD /* HeaderBadge.swift */; };
 		8A5E02E02A8D2E0400F73CAD /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BD2A8D2E0400F73CAD /* CameraView.swift */; };
 		8A5E02E12A8D2E0400F73CAD /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02BE2A8D2E0400F73CAD /* MenuView.swift */; };
@@ -40,6 +39,17 @@
 		8A5E02E92A8D2E0400F73CAD /* MultipartForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02CB2A8D2E0400F73CAD /* MultipartForm.swift */; };
 		8A5E02EA2A8D2E0400F73CAD /* InternetConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5E02CC2A8D2E0400F73CAD /* InternetConnection.swift */; };
 		8AE6B3A12A8D3105007E4B29 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE6B3A02A8D3105007E4B29 /* Error.swift */; };
+		DE51011A2E0611AA00F73CAD /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51001A2E0611AA00F73CAD /* AppTheme.swift */; };
+		DE51012A2E0611AA00F73CAD /* SwiftCastTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51002A2E0611AA00F73CAD /* SwiftCastTheme.swift */; };
+		DE51013A2E0611AA00F73CAD /* ThemeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51003A2E0611AA00F73CAD /* ThemeEnvironment.swift */; };
+		DE51014A2E0611AA00F73CAD /* SectionCaption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51004A2E0611AA00F73CAD /* SectionCaption.swift */; };
+		DE51015A2E0611AA00F73CAD /* GlassViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51005A2E0611AA00F73CAD /* GlassViewModifier.swift */; };
+		DE5103102E0611AA00F73CAD /* RecordingViewModel+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5102102E0611AA00F73CAD /* RecordingViewModel+Copy.swift */; };
+		DE5103202E0611AA00F73CAD /* SuccessRecordingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5102202E0611AA00F73CAD /* SuccessRecordingViewModel.swift */; };
+		DE5103302E0611AA00F73CAD /* SuccessRecordingViewModel+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5102302E0611AA00F73CAD /* SuccessRecordingViewModel+Copy.swift */; };
+		DE5103402E0611AA00F73CAD /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5102402E0611AA00F73CAD /* LoginViewModel.swift */; };
+		DE5103502E0611AA00F73CAD /* LoginViewModel+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5102502E0611AA00F73CAD /* LoginViewModel+Copy.swift */; };
+		DE5103602E0611AA00F73CAD /* BaseViewModel+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5102602E0611AA00F73CAD /* BaseViewModel+Copy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,7 +92,6 @@
 		8A5E02B52A8D2E0400F73CAD /* BaseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		8A5E02B72A8D2E0400F73CAD /* BaseViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		8A5E02BA2A8D2E0400F73CAD /* SwiftCastButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCastButton.swift; sourceTree = "<group>"; };
-		8A5E02BB2A8D2E0400F73CAD /* MenuButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuButtonView.swift; sourceTree = "<group>"; };
 		8A5E02BC2A8D2E0400F73CAD /* HeaderBadge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderBadge.swift; sourceTree = "<group>"; };
 		8A5E02BD2A8D2E0400F73CAD /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		8A5E02BE2A8D2E0400F73CAD /* MenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
@@ -97,6 +106,17 @@
 		8A5E02CB2A8D2E0400F73CAD /* MultipartForm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartForm.swift; sourceTree = "<group>"; };
 		8A5E02CC2A8D2E0400F73CAD /* InternetConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InternetConnection.swift; sourceTree = "<group>"; };
 		8AE6B3A02A8D3105007E4B29 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		DE51001A2E0611AA00F73CAD /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		DE51002A2E0611AA00F73CAD /* SwiftCastTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCastTheme.swift; sourceTree = "<group>"; };
+		DE51003A2E0611AA00F73CAD /* ThemeEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeEnvironment.swift; sourceTree = "<group>"; };
+		DE51004A2E0611AA00F73CAD /* SectionCaption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionCaption.swift; sourceTree = "<group>"; };
+		DE51005A2E0611AA00F73CAD /* GlassViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassViewModifier.swift; sourceTree = "<group>"; };
+		DE5102102E0611AA00F73CAD /* RecordingViewModel+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecordingViewModel+Copy.swift"; sourceTree = "<group>"; };
+		DE5102202E0611AA00F73CAD /* SuccessRecordingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessRecordingViewModel.swift; sourceTree = "<group>"; };
+		DE5102302E0611AA00F73CAD /* SuccessRecordingViewModel+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SuccessRecordingViewModel+Copy.swift"; sourceTree = "<group>"; };
+		DE5102402E0611AA00F73CAD /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		DE5102502E0611AA00F73CAD /* LoginViewModel+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginViewModel+Copy.swift"; sourceTree = "<group>"; };
+		DE5102602E0611AA00F73CAD /* BaseViewModel+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseViewModel+Copy.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +169,7 @@
 			children = (
 				8A5E029C2A8D2E0300F73CAD /* App */,
 				8A5E02B82A8D2E0400F73CAD /* Components */,
+				DE51000A2E0611AA00F73CAD /* Design */,
 				8A5E02C82A8D2E0400F73CAD /* Extensions */,
 				8A5E02A32A8D2E0400F73CAD /* Managers */,
 				8A5E02A02A8D2E0400F73CAD /* Resources */,
@@ -230,6 +251,9 @@
 			isa = PBXGroup;
 			children = (
 				8A5E02AC2A8D2E0400F73CAD /* RecordingViewModel.swift */,
+				DE5102102E0611AA00F73CAD /* RecordingViewModel+Copy.swift */,
+				DE5102202E0611AA00F73CAD /* SuccessRecordingViewModel.swift */,
+				DE5102302E0611AA00F73CAD /* SuccessRecordingViewModel+Copy.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -246,6 +270,7 @@
 		8A5E02B02A8D2E0400F73CAD /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				DE5104002E0611AA00F73CAD /* ViewModel */,
 				8A5E02B12A8D2E0400F73CAD /* View */,
 			);
 			path = Login;
@@ -257,6 +282,15 @@
 				8A5E02B22A8D2E0400F73CAD /* LoginView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		DE5104002E0611AA00F73CAD /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DE5102402E0611AA00F73CAD /* LoginViewModel.swift */,
+				DE5102502E0611AA00F73CAD /* LoginViewModel+Copy.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		8A5E02B32A8D2E0400F73CAD /* Base */ = {
@@ -280,6 +314,7 @@
 			isa = PBXGroup;
 			children = (
 				8A5E02B72A8D2E0400F73CAD /* BaseViewModel.swift */,
+				DE5102602E0611AA00F73CAD /* BaseViewModel+Copy.swift */,
 			);
 			path = BaseViewModel;
 			sourceTree = "<group>";
@@ -297,11 +332,11 @@
 			isa = PBXGroup;
 			children = (
 				8A5E02BA2A8D2E0400F73CAD /* SwiftCastButton.swift */,
-				8A5E02BB2A8D2E0400F73CAD /* MenuButtonView.swift */,
 				8A5E02BC2A8D2E0400F73CAD /* HeaderBadge.swift */,
 				8A5E02BD2A8D2E0400F73CAD /* CameraView.swift */,
 				8A5E02BE2A8D2E0400F73CAD /* MenuView.swift */,
 				8A5E02BF2A8D2E0400F73CAD /* CaptureView.swift */,
+				DE51004A2E0611AA00F73CAD /* SectionCaption.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -312,6 +347,7 @@
 				8A5E02C12A8D2E0400F73CAD /* FloatingViewModifier.swift */,
 				8A5E02C22A8D2E0400F73CAD /* MaterialViewModifier.swift */,
 				8A5E02C32A8D2E0400F73CAD /* LoadingViewModifier.swift */,
+				DE51005A2E0611AA00F73CAD /* GlassViewModifier.swift */,
 			);
 			path = ViewModifiers;
 			sourceTree = "<group>";
@@ -341,6 +377,16 @@
 				8A5E02CC2A8D2E0400F73CAD /* InternetConnection.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		DE51000A2E0611AA00F73CAD /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				DE51001A2E0611AA00F73CAD /* AppTheme.swift */,
+				DE51002A2E0611AA00F73CAD /* SwiftCastTheme.swift */,
+				DE51003A2E0611AA00F73CAD /* ThemeEnvironment.swift */,
+			);
+			path = Design;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -494,13 +540,23 @@
 				8A5E02D52A8D2E0400F73CAD /* SwiftCastCacheManager.swift in Sources */,
 				8A5E02D82A8D2E0400F73CAD /* RecordingView.swift in Sources */,
 				8AE6B3A12A8D3105007E4B29 /* Error.swift in Sources */,
-				8A5E02DE2A8D2E0400F73CAD /* MenuButtonView.swift in Sources */,
 				8A5E02CE2A8D2E0400F73CAD /* StatusBarController.swift in Sources */,
 				8A5E02D62A8D2E0400F73CAD /* ScreenRecordManager.swift in Sources */,
 				8A5E02E32A8D2E0400F73CAD /* FloatingViewModifier.swift in Sources */,
 				8A5E02DD2A8D2E0400F73CAD /* SwiftCastButton.swift in Sources */,
 				8A5E02D22A8D2E0400F73CAD /* AppManager.swift in Sources */,
 				8A5E02E22A8D2E0400F73CAD /* CaptureView.swift in Sources */,
+				DE51011A2E0611AA00F73CAD /* AppTheme.swift in Sources */,
+				DE51012A2E0611AA00F73CAD /* SwiftCastTheme.swift in Sources */,
+				DE51013A2E0611AA00F73CAD /* ThemeEnvironment.swift in Sources */,
+				DE51014A2E0611AA00F73CAD /* SectionCaption.swift in Sources */,
+				DE51015A2E0611AA00F73CAD /* GlassViewModifier.swift in Sources */,
+				DE5103102E0611AA00F73CAD /* RecordingViewModel+Copy.swift in Sources */,
+				DE5103202E0611AA00F73CAD /* SuccessRecordingViewModel.swift in Sources */,
+				DE5103302E0611AA00F73CAD /* SuccessRecordingViewModel+Copy.swift in Sources */,
+				DE5103402E0611AA00F73CAD /* LoginViewModel.swift in Sources */,
+				DE5103502E0611AA00F73CAD /* LoginViewModel+Copy.swift in Sources */,
+				DE5103602E0611AA00F73CAD /* BaseViewModel+Copy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

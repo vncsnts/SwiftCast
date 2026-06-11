@@ -8,30 +8,49 @@
 import SwiftUI
 
 struct LoginView: View {
+    @Environment(\.appTheme) private var t
     @EnvironmentObject var appManager: AppManager
-    
+
+    @StateObject var viewModel = LoginViewModel()
+
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Image(systemName: "camera.filters")
-                Spacer()
-            }
-            .padding([.leading, .trailing, .bottom])
-            
             Spacer()
-            
-            SwiftCastButton(title: "Sign Up")
-            SwiftCastButton(action: {
+
+            VStack(spacing: t.spacing.large) {
+                ZStack {
+                    Circle()
+                        .fill(t.color.background.accent.gradient)
+                        .frame(width: 72, height: 72)
+                    Image(systemName: "camera.filters")
+                        .font(t.font.heading)
+                        .foregroundColor(t.color.foreground.onAccent)
+                }
+                VStack(spacing: t.spacing.xs) {
+                    Text(LoginViewModel.Copy.appName)
+                        .font(t.font.heading)
+                        .foregroundColor(t.color.foreground.default)
+                    Text(LoginViewModel.Copy.tagline)
+                        .font(t.font.body)
+                        .foregroundColor(t.color.foreground.secondary)
+                        .multilineTextAlignment(.center)
+                }
+            }
+
+            Spacer()
+
+            VStack(spacing: t.spacing.medium) {
+                SwiftCastButton(action: {
 //                if let url = URL(string: "") {
 //                    NSWorkspace.shared.open(url)
 //                }
-            }, title: "Login")
-
-            Spacer()
+                }, title: LoginViewModel.Copy.logInButtonTitle)
+                SwiftCastButton(title: LoginViewModel.Copy.createAccountButtonTitle, isProminent: false)
+            }
+            .padding(.horizontal, t.padding.xl)
+            .padding(.bottom, t.padding.xl)
         }
-        .background(.background)
         .frame(width: appManager.fixedFrame.width, height: appManager.fixedFrame.height, alignment: .center)
-        .preferredColorScheme(.light)
     }
 }
 

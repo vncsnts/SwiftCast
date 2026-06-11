@@ -32,7 +32,7 @@ struct BaseView: View {
         .onOpenURL { incomingURL in
             handleIncomingURL(incomingURL)
         }
-        .alert("SwiftCast", isPresented: $viewModel.isOnAlert) {
+        .alert(BaseViewModel.Copy.alertTitle, isPresented: $viewModel.isOnAlert) {
             
         } message: {
             Text(viewModel.alertMessage)

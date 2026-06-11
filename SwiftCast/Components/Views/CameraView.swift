@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct CameraView: View {
+    @Environment(\.appTheme) private var t
     var image: CGImage?
     var stretch = false
     private let label = Text("frame")
-    
+
     var body: some View {
         if let image = image {
             if stretch {
@@ -24,7 +25,16 @@ struct CameraView: View {
                     .scaledToFit()
             }
         } else {
-            Color.black
+            ZStack {
+                Color.black
+                VStack(spacing: t.spacing.small) {
+                    Image(systemName: "video.slash.fill")
+                        .font(t.font.heading)
+                    Text("Camera is off")
+                        .font(t.font.helper)
+                }
+                .foregroundColor(t.color.foreground.onAccent.opacity(0.55))
+            }
         }
     }
 }

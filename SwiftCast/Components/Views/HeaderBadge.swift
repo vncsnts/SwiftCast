@@ -8,19 +8,18 @@
 import SwiftUI
 
 struct HeaderBadge: View {
+    @Environment(\.appTheme) private var t
     var title: String
-    
+
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
             Text(title)
-                .fontWeight(.semibold)
-                .foregroundColor(.white.opacity(0.8))
+                .font(t.font.pillLabel)
+                .foregroundColor(t.color.foreground.secondary)
         }
-        .padding(.leading, 9)
-        .padding(.trailing, 8)
-        .padding(.vertical, 4)
-        .background(.white.opacity(0.1))
-        .cornerRadius(4)
+        .padding(.horizontal, t.padding.small)
+        .padding(.vertical, t.padding.xs)
+        .glassCapsule()
     }
 }
 

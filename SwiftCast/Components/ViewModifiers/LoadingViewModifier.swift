@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LoadingView: ViewModifier {
+    @Environment(\.appTheme) private var t
     @Binding var isLoading: Bool
     @Binding var message: String
     
@@ -16,25 +17,25 @@ struct LoadingView: ViewModifier {
             content
             
             if isLoading {
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.25)
                     .ignoresSafeArea()
                 loader()
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: isLoading)
     }
-    
+
     @ViewBuilder private func loader() -> some View {
-        VStack {
-            VStack {
-                Text(message)
-                    .multilineTextAlignment(.center)
-                ProgressView()
-            }
-            .padding()
+        VStack(spacing: t.spacing.medium) {
+            ProgressView()
+            Text(message)
+                .font(t.font.body)
+                .foregroundColor(t.color.foreground.secondary)
+                .multilineTextAlignment(.center)
         }
-        .background(Color(NSColor.underPageBackgroundColor))
-        .cornerRadius(10)
-        .shadow(radius: 2)
+        .padding(t.padding.xl)
+        .frame(minWidth: 180)
+        .glassCard(cornerRadius: t.cornerRadius.medium)
         .contentShape(Rectangle())
     }
 }
