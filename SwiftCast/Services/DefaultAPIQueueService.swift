@@ -1,5 +1,5 @@
 //
-//  APIQueueService.swift
+//  DefaultAPIQueueService.swift
 //  SwiftCast
 //
 //  Created by Vince Carlo Santos on 6/16/23.
@@ -8,8 +8,8 @@
 import Foundation
 
 /// Service for the API Queuer that stores payload locally on the .apiQueue Folder from SwiftCastFileManager
-actor APIQueueService {
-    static let shared = APIQueueService()
+actor DefaultAPIQueueService: APIQueueService {
+    static let shared = DefaultAPIQueueService()
     public var urlErrorsForQueue = [URLError.Code.networkConnectionLost, URLError.Code.notConnectedToInternet, URLError.Code.dataNotAllowed]
     private var isScreenQueueBusy = false
     private var isCheckingScreenQueue = true
@@ -41,13 +41,13 @@ actor APIQueueService {
     
     func deleteAllChunks() async {
         Task {
-            guard let currentScreenOnStorage = await SwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue) else { return }
+            guard let currentScreenOnStorage = await DefaultSwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue) else { return }
             for url in currentScreenOnStorage {
-                let _ = await SwiftCastFileManager.shared.remove(url: url)
+                let _ = await DefaultSwiftCastFileManager.shared.remove(url: url)
             }
-            guard let currentCameraOnStorage = await SwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
+            guard let currentCameraOnStorage = await DefaultSwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
             for url in currentCameraOnStorage {
-                let _ = await SwiftCastFileManager.shared.remove(url: url)
+                let _ = await DefaultSwiftCastFileManager.shared.remove(url: url)
             }
         }
     }
@@ -108,13 +108,13 @@ actor APIQueueService {
     /// Processes the first file seen when APIQueueService is not busy
     private func processTheFirstScreenBitOnStorage() async {
         isScreenQueueBusy = true
-        guard let currentQueueOnStorage = await SwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue) else { return }
+        guard let currentQueueOnStorage = await DefaultSwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue) else { return }
         for url in currentQueueOnStorage {
-            guard let data = await SwiftCastFileManager.shared.getFromUrl(url: url) else { return }
+            guard let data = await DefaultSwiftCastFileManager.shared.getFromUrl(url: url) else { return }
             let fullFileName = url.lastPathComponent
             
-            guard let _ = try? await APIRequestService.shared.sendChunk(chunkFileName: fullFileName, chunk: data) else { break }
-            let _ = await SwiftCastFileManager.shared.remove(url: url)
+            guard let _ = try? await DefaultAPIRequestService.shared.sendChunk(chunkFileName: fullFileName, chunk: data) else { break }
+            let _ = await DefaultSwiftCastFileManager.shared.remove(url: url)
             screenChunkUrls.append(fullFileName)
         }
         isScreenQueueBusy = false
@@ -122,13 +122,13 @@ actor APIQueueService {
     
     private func processTheFirstCameraBitOnStorage() async {
         isCameraQueueBusy = true
-        guard let currentQueueOnStorage = await SwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
+        guard let currentQueueOnStorage = await DefaultSwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
         for url in currentQueueOnStorage {
-            guard let data = await SwiftCastFileManager.shared.getFromUrl(url: url) else { return }
+            guard let data = await DefaultSwiftCastFileManager.shared.getFromUrl(url: url) else { return }
             let fullFileName = url.lastPathComponent
             
-            guard let _ = try? await APIRequestService.shared.sendChunk(chunkFileName: fullFileName, chunk: data) else { break }
-            let _ = await SwiftCastFileManager.shared.remove(url: url)
+            guard let _ = try? await DefaultAPIRequestService.shared.sendChunk(chunkFileName: fullFileName, chunk: data) else { break }
+            let _ = await DefaultSwiftCastFileManager.shared.remove(url: url)
             cameraChunkUrls.append(fullFileName)
         }
         isCameraQueueBusy = false

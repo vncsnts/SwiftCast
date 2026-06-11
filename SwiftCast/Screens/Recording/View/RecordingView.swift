@@ -9,9 +9,10 @@ import SwiftUI
 
 struct RecordingView: View {
     @Environment(\.appTheme) private var t
-    @EnvironmentObject var screenRecordManager: ScreenRecordManager
-    @EnvironmentObject var cameraManager: CameraRecordManager
-    @EnvironmentObject var appManager: AppManager
+    @EnvironmentObject var screenRecordManager: DefaultScreenRecordManager
+    @EnvironmentObject var cameraManager: DefaultCameraRecordManager
+    @EnvironmentObject var appManager: DefaultAppManager
+    @EnvironmentObject var statusBarManager: DefaultStatusBarManager
     @EnvironmentObject var appDelegate: AppDelegate
 
     @StateObject var viewModel = RecordingViewModel()
@@ -39,7 +40,7 @@ struct RecordingView: View {
                 viewModel.loadingMessage = RecordingViewModel.Copy.checkingDevicesMessage
                 viewModel.isLoading = true
                 do {
-                    try await APIRequestService.shared.initializeService()
+                    try await DefaultAPIRequestService.shared.initializeService()
                     await screenRecordManager.monitorAvailableContent()
                     cameraManager.startCapture()
                     viewModel.isLoading = false
@@ -83,9 +84,9 @@ struct RecordingView: View {
     @ViewBuilder private var recordingPill: some View {
         HStack(spacing: t.spacing.xs) {
             Circle()
-                .fill(t.color.status.recording)
+                .fill(screenRecordManager.isPaused ? t.color.status.paused : t.color.status.recording)
                 .frame(width: 7, height: 7)
-            Text(RecordingViewModel.Copy.recordingBadge)
+            Text(screenRecordManager.isPaused ? RecordingViewModel.Copy.pausedBadge : RecordingViewModel.Copy.recordingBadge)
                 .font(t.font.pillLabel)
                 .foregroundColor(t.color.foreground.default)
         }
@@ -177,20 +178,32 @@ extension RecordingView {
     
         Task {
             viewModel.isLoading = false
-            await APIQueueService.shared.deleteAllChunks()
+            await DefaultAPIQueueService.shared.deleteAllChunks()
             await screenRecordManager.startRecording(with: screenUUID)
             await cameraManager.startRecording(with: cameraUUID)
             Task {
-                await APIQueueService.shared.startCameraQueueChecker()
+                await DefaultAPIQueueService.shared.startCameraQueueChecker()
             }
-            
+
             Task {
-                await APIQueueService.shared.startScreenQueueChecker()
+                await DefaultAPIQueueService.shared.startScreenQueueChecker()
             }
+
+            let screen = screenRecordManager
+            let camera = cameraManager
+            statusBarManager.showRecordingItem(onPauseToggle: { paused in
+                screen.setPaused(paused)
+                camera.setPaused(paused)
+            }, onStop: {
+                stopRecording()
+            })
+            appManager.hideMainWindow()
         }
     }
     
     func stopRecording() {
+        statusBarManager.hideRecordingItem()
+        appManager.showMainWindow()
         Task {
             viewModel.loadingMessage = RecordingViewModel.Copy.stoppingRecordingMessage
             viewModel.isLoading = true
@@ -201,20 +214,20 @@ extension RecordingView {
                 viewModel.loadingMessage = RecordingViewModel.Copy.wrappingUpChunksMessage
                 repeat {
                     try? await Task.sleep(nanoseconds: 1.convertToNanoSeconds())
-                    guard let screenQueue = await SwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue), let cameraQueue = await SwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
+                    guard let screenQueue = await DefaultSwiftCastFileManager.shared.getFolderFiles(folder: .screenQueue), let cameraQueue = await DefaultSwiftCastFileManager.shared.getFolderFiles(folder: .cameraQueue) else { return }
                     if screenQueue.isEmpty && cameraQueue.isEmpty {
                         viewModel.loadingMessage = RecordingViewModel.Copy.convertingMessage
                         viewModel.isUploading = false
                         viewModel.loadingMessage = RecordingViewModel.Copy.gettingScreenUrlMessage
                         do {
-                            let screenPublicUrl = try await APIRequestService.shared.finalizeRecordings(chunkUrls: APIQueueService.shared.getScreenChunkUrls())
+                            let screenPublicUrl = try await DefaultAPIRequestService.shared.finalizeRecordings(chunkUrls: DefaultAPIQueueService.shared.getScreenChunkUrls())
                             viewModel.screenPublicUrl = screenPublicUrl
-                            SwiftCastCacheManager.shared.screenPublicUrls.append(screenPublicUrl)
+                            DefaultSwiftCastCacheManager.shared.screenPublicUrls.append(screenPublicUrl)
                             viewModel.loadingMessage = RecordingViewModel.Copy.gettingCameraUrlMessage
-                            let cameraPublicUrl = try await APIRequestService.shared.finalizeRecordings(chunkUrls: APIQueueService.shared.getCameraChunkUrls())
+                            let cameraPublicUrl = try await DefaultAPIRequestService.shared.finalizeRecordings(chunkUrls: DefaultAPIQueueService.shared.getCameraChunkUrls())
                             viewModel.cameraPublicUrl = cameraPublicUrl
-                            SwiftCastCacheManager.shared.cameraPublicUrls.append(screenPublicUrl)
-                            await APIQueueService.shared.removeAllUrls()
+                            DefaultSwiftCastCacheManager.shared.cameraPublicUrls.append(screenPublicUrl)
+                            await DefaultAPIQueueService.shared.removeAllUrls()
                             viewModel.isUploading = false
                             viewModel.isLoading = false
                             viewModel.presentSuccess = true

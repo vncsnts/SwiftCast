@@ -1,5 +1,5 @@
 //
-//  SwiftCastFileManager.swift
+//  DefaultSwiftCastFileManager.swift
 //  SwiftCast
 //
 //  Created by Vince Carlo Santos on 6/16/23.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-actor SwiftCastFileManager {
-    static let shared = SwiftCastFileManager()
+actor DefaultSwiftCastFileManager: SwiftCastFileManager {
+    static let shared = DefaultSwiftCastFileManager()
     
     /// Creates the necessary Folders for SwiftCast
     nonisolated func createAppFolders() {

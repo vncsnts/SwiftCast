@@ -1,5 +1,5 @@
 //
-//  ScreenRecordManager.swift
+//  DefaultScreenRecordManager.swift
 //  SwiftCast
 //
 //  Created by Vince Carlo Santos on 6/10/23.
@@ -10,7 +10,7 @@ import CoreGraphics
 import AVFoundation
 
 @MainActor
-class ScreenRecordManager: NSObject, ObservableObject {
+class DefaultScreenRecordManager: NSObject, ObservableObject, ScreenRecordManager {
     /// The supported capture types.
     enum CaptureType {
         case display
@@ -18,7 +18,8 @@ class ScreenRecordManager: NSObject, ObservableObject {
     }
     
     @Published var isRecording = false
-    
+    @Published var isPaused = false
+
     // MARK: - Video Properties
     private(set) var availableDisplays = [SCDisplay]()
     private(set) var availableWindows = [SCWindow]()
@@ -252,6 +253,10 @@ class ScreenRecordManager: NSObject, ObservableObject {
             
             if isChunked {
                 repeat {
+                    if isPaused {
+                        try? await Task.sleep(nanoseconds: 200000000)
+                        continue
+                    }
                     bitVideoCount += 1
                     bitAssetWriter = try AVAssetWriter(url: bitVideoFileLocation(), fileType: .mp4)
                     if bitAssetWriter.canAdd(bitVideoWriterInput) {
@@ -286,9 +291,17 @@ class ScreenRecordManager: NSObject, ObservableObject {
             await assetWriter.finishWriting()
             currentStreamId = ""
             isRecording = false
+            isPaused = false
         } catch {
             print(error.localizedDescription)
         }
+    }
+
+    /// Pauses or resumes capture without ending the session. While paused,
+    /// no frames are written and no chunks are produced.
+    public func setPaused(_ paused: Bool) {
+        guard isRecording else { return }
+        isPaused = paused
     }
     
     public func selectDisplay(display: SCDisplay) {
@@ -338,7 +351,7 @@ class ScreenRecordManager: NSObject, ObservableObject {
     }
 }
 
-extension ScreenRecordManager: SCStreamOutput, SCStreamDelegate {
+extension DefaultScreenRecordManager: SCStreamOutput, SCStreamDelegate {
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
         guard sampleBuffer.isValid else { return }
         
@@ -362,12 +375,12 @@ extension ScreenRecordManager: SCStreamOutput, SCStreamDelegate {
         switch type {
         case .screen:
             screenQueue.async { [self] in
-                if videoWriterInput.isReadyForMoreMediaData && isRecording {
+                if videoWriterInput.isReadyForMoreMediaData && isRecording && !isPaused {
                     assetWriter.startSession(atSourceTime: sourceTime)
                     videoWriterInput.append(sampleBuffer)
                 }
 
-                if bitVideoWriterInput.isReadyForMoreMediaData && isRecording {
+                if bitVideoWriterInput.isReadyForMoreMediaData && isRecording && !isPaused {
                     bitAssetWriter.startSession(atSourceTime: sourceTime)
                     bitVideoWriterInput.append(sampleBuffer)
                 }

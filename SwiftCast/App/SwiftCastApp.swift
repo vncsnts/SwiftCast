@@ -19,10 +19,10 @@ struct SwiftCastApp: App {
                 .environmentObject(appDelegate.screenRecordManager)
                 .environmentObject(appDelegate.cameraRecordManager)
                 .environmentObject(appDelegate.appManager)
+                .environmentObject(appDelegate.statusBarManager)
                 .environmentObject(appDelegate)
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
-        .handlesExternalEvents(matching: ["swiftCast"]) // create new window if doesn't exist
     }
 }

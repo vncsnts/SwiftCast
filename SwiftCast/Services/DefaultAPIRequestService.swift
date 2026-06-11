@@ -1,5 +1,5 @@
 //
-//  APIRequestService.swift
+//  DefaultAPIRequestService.swift
 //  SwiftCast
 //
 //  Created by Vince Carlo Santos on 6/16/23.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-actor APIRequestService {
-    public static let shared = APIRequestService()
+actor DefaultAPIRequestService: APIRequestService {
+    public static let shared = DefaultAPIRequestService()
     
     lazy var domainUrl: URL = {
         guard let url = URL(string: "") else {

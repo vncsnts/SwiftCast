@@ -12,6 +12,7 @@ extension RecordingViewModel {
         static let appName = "SwiftCast"
         static let betaBadge = "BETA"
         static let recordingBadge = "REC"
+        static let pausedBadge = "PAUSED"
 
         static let sourcesSectionTitle = "Sources"
         static let cameraSourceLabel = "Camera"

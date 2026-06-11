@@ -1,5 +1,5 @@
 //
-//  SwiftCastCacheManager.swift
+//  DefaultSwiftCastCacheManager.swift
 //  SwiftCast
 //
 //  Created by Vince Carlo Santos on 8/8/23.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-final class SwiftCastCacheManager {
-    static let shared = SwiftCastCacheManager()
+final class DefaultSwiftCastCacheManager: SwiftCastCacheManager {
+    static let shared = DefaultSwiftCastCacheManager()
     var screenPublicUrls: [String] {
         get {
             return UserDefaults.standard.stringArray(forKey: SwiftCastCacheType.screenPublicUrls.rawValue) ?? [String]()

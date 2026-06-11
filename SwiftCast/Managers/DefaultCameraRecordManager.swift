@@ -1,5 +1,5 @@
 //
-//  CameraRecordManager.swift
+//  DefaultCameraRecordManager.swift
 //  SwiftCast
 //
 //  Created by Vince Carlo Santos on 6/13/23.
@@ -9,7 +9,7 @@ import AVFoundation
 import CoreImage
 
 @MainActor
-class CameraRecordManager: NSObject, ObservableObject {
+class DefaultCameraRecordManager: NSObject, ObservableObject, CameraRecordManager {
     @Published var frame: CGImage?
     @Published var cameraOptions: [AVCaptureDevice] = []
     @Published var selectedCamera: SelectedDevice = SelectedDevice(localizedName: "", uniqueId: "") {
@@ -24,6 +24,7 @@ class CameraRecordManager: NSObject, ObservableObject {
         }
     }
     @Published var isRecording = false
+    @Published var isPaused = false
     @Published var isChunked = false
     private var permissionGranted = false
     private let captureSession = AVCaptureSession()
@@ -201,6 +202,10 @@ class CameraRecordManager: NSObject, ObservableObject {
             bitAssetCount = 0
             if isChunked {
                 repeat {
+                    if isPaused {
+                        try? await Task.sleep(nanoseconds: 200000000)
+                        continue
+                    }
                     bitAssetCount += 1
                     bitAssetWriter = try AVAssetWriter(url: bitFileLocation(), fileType: .mp4)
                     
@@ -231,8 +236,16 @@ class CameraRecordManager: NSObject, ObservableObject {
     
     func stopRecording() async {
         isRecording = false
+        isPaused = false
         await assetWriter.finishWriting()
         currentStreamId = ""
+    }
+
+    /// Pauses or resumes capture without ending the session. While paused,
+    /// no frames are written and no chunks are produced.
+    func setPaused(_ paused: Bool) {
+        guard isRecording else { return }
+        isPaused = paused
     }
     
     func bitFileLocation() -> URL {
@@ -282,19 +295,19 @@ class CameraRecordManager: NSObject, ObservableObject {
     }
 }
 
-extension CameraRecordManager: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
+extension DefaultCameraRecordManager: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard sampleBuffer.isValid else { return }
         let sourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
         self.currentSessionTime = sourceTime
         if output.isKind(of: AVCaptureVideoDataOutput.self) {
             videoQueue.async {
-                if self.videoWriterInput.isReadyForMoreMediaData && self.isRecording {
+                if self.videoWriterInput.isReadyForMoreMediaData && self.isRecording && !self.isPaused {
                     self.assetWriter.startSession(atSourceTime: sourceTime)
                     self.videoWriterInput.append(sampleBuffer)
                 }
-                
-                if self.bitVideoWriterInput.isReadyForMoreMediaData && self.isRecording && self.isChunked {
+
+                if self.bitVideoWriterInput.isReadyForMoreMediaData && self.isRecording && self.isChunked && !self.isPaused {
                     self.bitAssetWriter.startSession(atSourceTime: sourceTime)
                     self.bitVideoWriterInput.append(sampleBuffer)
                 }
@@ -306,12 +319,12 @@ extension CameraRecordManager: AVCaptureVideoDataOutputSampleBufferDelegate, AVC
             }
         } else if output.isKind(of: AVCaptureAudioDataOutput.self) {
             audioQueue.async {
-                if self.audioWriterInput.isReadyForMoreMediaData && self.isRecording {
+                if self.audioWriterInput.isReadyForMoreMediaData && self.isRecording && !self.isPaused {
                     self.assetWriter.startSession(atSourceTime: sourceTime)
                     self.audioWriterInput.append(sampleBuffer)
                 }
-                
-                if self.bitAudioWriterInput.isReadyForMoreMediaData && self.isRecording && self.isChunked {
+
+                if self.bitAudioWriterInput.isReadyForMoreMediaData && self.isRecording && self.isChunked && !self.isPaused {
                     self.bitAssetWriter.startSession(atSourceTime: sourceTime)
                     self.bitAudioWriterInput.append(sampleBuffer)
                 }
