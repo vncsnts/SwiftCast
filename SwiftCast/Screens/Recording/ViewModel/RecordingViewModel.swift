@@ -1,8 +1,6 @@
 //
 //  RecordingViewModel.swift
-//  swiftCastFolderPath
-//
-//  Created by Vince Carlo Santos on 7/13/23.
+//  SwiftCast
 //
 
 import Foundation
@@ -17,21 +15,23 @@ final class RecordingViewModel: ObservableObject {
     @Published var screenPublicUrl = ""
     @Published var cameraPublicUrl = ""
     @Published var presentSuccess = false
+    @Published var showLibrary = false
     private var currentID = ""
-    
-    func setCurrentStreamId(streamId: String) {
-        currentID = streamId
+
+    func setCurrentStreamId() {
+        currentID = RecordingSession.makeSessionId()
     }
-    
+
     func getCurrentStreamId() -> String {
         return currentID
     }
-    
+
+    // Both screen and camera clips share the same session folder ID.
     func getCurrentScreenStreamId() -> String {
-        return currentID + "-screen"
+        return currentID
     }
-    
+
     func getCurrentCameraStreamId() -> String {
-        return currentID + "-camera"
+        return currentID
     }
 }

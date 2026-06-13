@@ -35,5 +35,6 @@ extension RecordingViewModel {
         static let convertingMessage = "Converting to mp4..."
         static let gettingScreenUrlMessage = "Getting Screen Stream URL..."
         static let gettingCameraUrlMessage = "Getting Camera Stream URL..."
+        static let libraryButtonTooltip = "Open Library"
     }
 }

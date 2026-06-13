@@ -136,6 +136,7 @@ actor DefaultSwiftCastFileManager: SwiftCastFileManager {
 
 /// An enum for all possible folders for SwiftCast
 enum SwiftCastFileManagerFolder: String, CaseIterable {
+    case recordings = "SwiftCast"
     case screenQueue = "SwiftCast-Screen-Segments"
     case cameraQueue = "SwiftCast-Camera-Segments"
 }

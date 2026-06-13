@@ -67,6 +67,16 @@ struct RecordingView: View {
         .sheet(isPresented: $viewModel.presentSuccess) {
             SuccessRecordingView(screenUrl: viewModel.screenPublicUrl, cameraUrl: viewModel.cameraPublicUrl)
         }
+        .sheet(isPresented: $viewModel.showLibrary) {
+            NavigationStack {
+                LibraryView()
+                    .navigationDestination(for: RecordingSession.self) { session in
+                        EditorView(session: session)
+                    }
+            }
+            .frame(width: 860, height: 640)
+            .theme(SwiftCastTheme())
+        }
     }
 
     @ViewBuilder private var header: some View {
@@ -78,6 +88,16 @@ struct RecordingView: View {
                 .font(t.font.pillValue)
                 .foregroundColor(t.color.foreground.default)
             Spacer()
+            Button {
+                viewModel.showLibrary = true
+            } label: {
+                Image(systemName: "film.stack")
+                    .font(t.font.pillValue)
+                    .foregroundColor(t.color.foreground.secondary)
+            }
+            .buttonStyle(.plain)
+            .help(RecordingViewModel.Copy.libraryButtonTooltip)
+            .disabled(screenRecordManager.isRecording)
         }
     }
 
@@ -172,7 +192,7 @@ extension RecordingView {
     func startRecording() {
         viewModel.loadingMessage = RecordingViewModel.Copy.sendingStartMessage
         viewModel.isLoading = true
-        viewModel.setCurrentStreamId(streamId: UUID().uuidString)
+        viewModel.setCurrentStreamId()
         let cameraUUID =  viewModel.getCurrentCameraStreamId()
         let screenUUID = viewModel.getCurrentScreenStreamId()
     

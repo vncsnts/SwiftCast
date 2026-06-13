@@ -273,24 +273,19 @@ class DefaultCameraRecordManager: NSObject, ObservableObject, CameraRecordManage
     
     func videoFileLocation() -> URL {
         let fileManager = FileManager.default
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.moviesDirectory, .userDomainMask, true)[0] as NSString
-        let swiftCastFolderPath = (documentsPath.appendingPathComponent("SwiftCast") as NSString).expandingTildeInPath
-        let videoOutputUrl = URL(fileURLWithPath: swiftCastFolderPath).appendingPathComponent("\(currentStreamId)").appendingPathExtension("mp4")
-        
+        let moviesURL = fileManager.urls(for: .moviesDirectory, in: .userDomainMask).first!
+        let sessionFolder = moviesURL.appendingPathComponent("SwiftCast").appendingPathComponent(currentStreamId)
+
         do {
-            if !fileManager.fileExists(atPath: swiftCastFolderPath) {
-                try fileManager.createDirectory(atPath: swiftCastFolderPath, withIntermediateDirectories: true, attributes: nil)
-                print("CameraRecordManager: Created 'SwiftCast' Folder.")
-            }
-            
-            if fileManager.fileExists(atPath: videoOutputUrl.path) {
-                try fileManager.removeItem(at: videoOutputUrl)
-                print("CameraRecordManager: Deleted existing file with the same path.")
+            if !fileManager.fileExists(atPath: sessionFolder.path) {
+                try fileManager.createDirectory(at: sessionFolder, withIntermediateDirectories: true)
             }
         } catch {
             print("CameraRecordManager: \(error.localizedDescription)")
         }
-        
+
+        let videoOutputUrl = sessionFolder.appendingPathComponent("cameraClip.mp4")
+        try? fileManager.removeItem(at: videoOutputUrl)
         return videoOutputUrl
     }
 }
