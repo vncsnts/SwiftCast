@@ -5,12 +5,17 @@
 
 import AVFoundation
 import CoreImage
-import Vision
 
 // MARK: - Service
 
 actor DefaultVideoExportService: VideoExportService {
     static let shared = DefaultVideoExportService()
+
+    private let faceTrackingService: any FaceTrackingService
+
+    init(faceTrackingService: any FaceTrackingService = DefaultFaceTrackingService.shared) {
+        self.faceTrackingService = faceTrackingService
+    }
 
     func exportVideo(
         session: RecordingSession,
@@ -20,6 +25,14 @@ actor DefaultVideoExportService: VideoExportService {
         guard let screenURL = session.screenClipURL,
               let cameraURL = session.cameraClipURL else {
             throw ExportError.missingClips
+        }
+
+        // Reuse the same offline, zero-phase-smoothed face track as the editor preview,
+        // instead of detecting faces independently on every exported frame (which had no
+        // temporal continuity and was the actual source of jitter in the exported video).
+        var faceTrack: [FaceTrackSample] = []
+        if layout.isFaceTrackingEnabled {
+            faceTrack = (try? await faceTrackingService.analyzeFaceTrack(url: cameraURL)) ?? []
         }
 
         let screenAsset = AVURLAsset(url: screenURL)
@@ -38,7 +51,15 @@ actor DefaultVideoExportService: VideoExportService {
         let cameraDuration = try await cameraAsset.load(.duration)
         let duration = CMTimeMinimum(screenDuration, cameraDuration)
         let timeRange = CMTimeRange(start: .zero, duration: duration)
-        let canvasSize = try await screenTrack.load(.naturalSize)
+
+        // Custom compositors receive source frames in natural (encoded) orientation; the
+        // preferredTransform (e.g. the 180° rotation on recorded camera clips) is display
+        // metadata the compositor must apply itself, or the export won't match the preview.
+        let screenTransform = try await screenTrack.load(.preferredTransform)
+        let cameraTransform = try await cameraTrack.load(.preferredTransform)
+        let naturalSize = try await screenTrack.load(.naturalSize)
+        let transformedSize = naturalSize.applying(screenTransform)
+        let canvasSize = CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
 
         let composition = AVMutableComposition()
 
@@ -58,7 +79,10 @@ actor DefaultVideoExportService: VideoExportService {
             screenTrackID: compScreen.trackID,
             cameraTrackID: compCamera.trackID,
             layout: layout,
-            canvasSize: canvasSize
+            canvasSize: canvasSize,
+            faceTrack: faceTrack,
+            screenOrientation: screenTransform.videoOrientation,
+            cameraOrientation: cameraTransform.videoOrientation
         )
 
         let videoComposition = AVMutableVideoComposition()
@@ -108,13 +132,24 @@ final class SwiftCastCompositionInstruction: NSObject, AVVideoCompositionInstruc
     let cameraTrackID: CMPersistentTrackID
     let layout: CameraClipLayout
     let canvasSize: CGSize
+    /// Precomputed, zero-phase-smoothed face track (empty when face tracking is disabled
+    /// or no face was ever detected). Looked up by composition time instead of re-running
+    /// Vision on every exported frame.
+    let faceTrack: [FaceTrackSample]
+    /// Display orientations from each track's preferredTransform, applied to the raw
+    /// source buffers so the composite matches what AVPlayer shows in the editor.
+    let screenOrientation: CGImagePropertyOrientation
+    let cameraOrientation: CGImagePropertyOrientation
 
-    init(timeRange: CMTimeRange, screenTrackID: CMPersistentTrackID, cameraTrackID: CMPersistentTrackID, layout: CameraClipLayout, canvasSize: CGSize) {
+    init(timeRange: CMTimeRange, screenTrackID: CMPersistentTrackID, cameraTrackID: CMPersistentTrackID, layout: CameraClipLayout, canvasSize: CGSize, faceTrack: [FaceTrackSample], screenOrientation: CGImagePropertyOrientation, cameraOrientation: CGImagePropertyOrientation) {
         self.timeRange = timeRange
         self.screenTrackID = screenTrackID
         self.cameraTrackID = cameraTrackID
         self.layout = layout
         self.canvasSize = canvasSize
+        self.faceTrack = faceTrack
+        self.screenOrientation = screenOrientation
+        self.cameraOrientation = cameraOrientation
         self.requiredSourceTrackIDs = [
             NSNumber(value: screenTrackID),
             NSNumber(value: cameraTrackID)
@@ -150,32 +185,39 @@ final class SwiftCastVideoCompositor: NSObject, AVVideoCompositing {
 
         var layout = instruction.layout
 
-        if layout.isFaceTrackingEnabled, let focusPoint = detectFace(in: cameraBuffer) {
-            layout.focusPoint = focusPoint
+        // Rotate raw buffers into display orientation up front so all downstream math
+        // (face centering, aspect-fill, masking) runs in the same space as the preview.
+        let screenImage = CIImage(cvPixelBuffer: screenBuffer).oriented(instruction.screenOrientation)
+        let cameraImage = CIImage(cvPixelBuffer: cameraBuffer).oriented(instruction.cameraOrientation)
+
+        if layout.isFaceTrackingEnabled,
+           let rawFace = instruction.faceTrack.interpolatedPoint(at: request.compositionTime.seconds) {
+            layout.focusPoint = centeringFocusPoint(for: rawFace, layout: layout, sourceSize: cameraImage.extent.size, canvasSize: instruction.canvasSize)
         }
 
-        composite(screen: screenBuffer, camera: cameraBuffer, layout: layout, canvasSize: instruction.canvasSize, into: outputBuffer)
+        composite(screen: screenImage, camera: cameraImage, layout: layout, canvasSize: instruction.canvasSize, into: outputBuffer)
         request.finish(withComposedVideoFrame: outputBuffer)
     }
 
-    // MARK: - Face Detection
-
-    private func detectFace(in buffer: CVPixelBuffer) -> CGPoint? {
-        let ciImage = CIImage(cvPixelBuffer: buffer)
-        guard let cgImage = ciContext.createCGImage(ciImage, from: ciImage.extent) else { return nil }
-        let request = VNDetectFaceRectanglesRequest()
-        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        try? handler.perform([request])
-        guard let face = request.results?.first else { return nil }
-        // Vision: bottom-left origin → SwiftUI: top-left origin (flip Y)
-        return CGPoint(x: face.boundingBox.midX, y: 1 - face.boundingBox.midY)
+    /// Converts a raw face position (top-left origin, [0,1]) to the [0,1] pan factor
+    /// that positions the face at the center of the clip frame in the composite output.
+    private func centeringFocusPoint(for rawFace: CGPoint, layout: CameraClipLayout, sourceSize: CGSize, canvasSize: CGSize) -> CGPoint {
+        let targetW = layout.frame.width * canvasSize.width
+        let targetH = layout.frame.height * canvasSize.height
+        let scale = max(targetW / sourceSize.width, targetH / sourceSize.height) * layout.zoom
+        let scaledW = sourceSize.width * scale
+        let scaledH = sourceSize.height * scale
+        let overflowX = max(0, scaledW - targetW)
+        let overflowY = max(0, scaledH - targetH)
+        let px = overflowX > 0 ? max(0, min((rawFace.x * scaledW - targetW / 2) / overflowX, 1.0)) : 0.5
+        let py = overflowY > 0 ? max(0, min((rawFace.y * scaledH - targetH / 2) / overflowY, 1.0)) : 0.5
+        return CGPoint(x: px, y: py)
     }
 
     // MARK: - Compositing
 
-    private func composite(screen: CVPixelBuffer, camera: CVPixelBuffer, layout: CameraClipLayout, canvasSize: CGSize, into output: CVPixelBuffer) {
-        let screenImage = CIImage(cvPixelBuffer: screen)
-        var cameraImage = CIImage(cvPixelBuffer: camera)
+    private func composite(screen screenImage: CIImage, camera: CIImage, layout: CameraClipLayout, canvasSize: CGSize, into output: CVPixelBuffer) {
+        var cameraImage = camera
 
         // Convert layout.frame (SwiftUI top-left origin, normalized) to CIImage (bottom-left origin)
         let targetFrame = CGRect(

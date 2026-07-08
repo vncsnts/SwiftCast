@@ -18,8 +18,8 @@ extension EditorViewModel {
         static let focusSectionTitle = "Focus"
         static let zoomLabel = "Zoom"
         static let faceTrackingLabel = "Face Tracking"
+        static let faceTrackingNoFaceMessage = "No face was detected in the camera clip."
         static let manualFocusHint = "Hold the camera clip to adjust focus"
-        static let manualFocusDoneButton = "Done"
         static let alertTitle = "SwiftCast"
     }
 }

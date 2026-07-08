@@ -16,6 +16,14 @@ enum CameraClipMask: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// The aspect ratio the clip frame should adopt for this mask. nil = use camera native AR.
+    var impliedAspectRatio: CGFloat? {
+        switch self {
+        case .circle, .squircle: return 1.0
+        default: return nil
+        }
+    }
+
     var systemImage: String {
         switch self {
         case .none: return "square.dashed"

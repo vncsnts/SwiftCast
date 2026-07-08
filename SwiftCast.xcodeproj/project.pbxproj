@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		028174DB27ED04A258EE428A /* DefaultFaceTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F1F64DDBF22F47EBC1328B /* DefaultFaceTrackingService.swift */; };
 		04A3738DF5418F8A6076C825 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96982F719E1BD5AE37EA89B1 /* LibraryView.swift */; };
 		17F37092639E77BE2F93A456 /* EditorViewModel+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 476F4DA0FDA717EBF97AA4C3 /* EditorViewModel+Copy.swift */; };
 		33E0D7A2F9124E62D17D7257 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AB682F0CD542BBAA8ECE78 /* EditorView.swift */; };
@@ -49,6 +50,9 @@
 		8DE3A24D19BBF8B8FF5EDB30 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAC8985453348E7C25FD195 /* LibraryViewModel.swift */; };
 		93059927563B7AB5FE71A68D /* LibraryViewModel+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597ED30BCE9CD7809C94206D /* LibraryViewModel+Copy.swift */; };
 		94DDA77029A2437C61D791CA /* DefaultVideoExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A848B2B90E297D1ED1E93F3C /* DefaultVideoExportService.swift */; };
+		9AE9AFF03AB9B9A4EED571D4 /* FaceTrackSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B69FEA0C343B44E68FD9BDB /* FaceTrackSample.swift */; };
+		AE0C99D17162D52B9E25CB91 /* FaceTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40D88D1194497A8ECAAFD9F2 /* FaceTrackingService.swift */; };
+		B6D92196629098C5C366BA63 /* CGAffineTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB9D8B6C9B2E21DBF03945 /* CGAffineTransform.swift */; };
 		DE51011A2E0611AA00F73CAD /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51001A2E0611AA00F73CAD /* AppTheme.swift */; };
 		DE51012A2E0611AA00F73CAD /* SwiftCastTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51002A2E0611AA00F73CAD /* SwiftCastTheme.swift */; };
 		DE51013A2E0611AA00F73CAD /* ThemeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE51003A2E0611AA00F73CAD /* ThemeEnvironment.swift */; };
@@ -89,12 +93,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0CAB9D8B6C9B2E21DBF03945 /* CGAffineTransform.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CGAffineTransform.swift; path = CGAffineTransform.swift; sourceTree = "<group>"; };
 		13AB682F0CD542BBAA8ECE78 /* EditorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EditorView.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		185EC83ECC816EC3C063D880 /* CameraClipMask.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraClipMask.swift; path = CameraClipMask.swift; sourceTree = "<group>"; };
+		40D88D1194497A8ECAAFD9F2 /* FaceTrackingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTrackingService.swift; path = FaceTrackingService.swift; sourceTree = "<group>"; };
 		476F4DA0FDA717EBF97AA4C3 /* EditorViewModel+Copy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "EditorViewModel+Copy.swift"; path = "EditorViewModel+Copy.swift"; sourceTree = "<group>"; };
 		4CAC8985453348E7C25FD195 /* LibraryViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LibraryViewModel.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		597ED30BCE9CD7809C94206D /* LibraryViewModel+Copy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "LibraryViewModel+Copy.swift"; path = "LibraryViewModel+Copy.swift"; sourceTree = "<group>"; };
+		6B69FEA0C343B44E68FD9BDB /* FaceTrackSample.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTrackSample.swift; path = FaceTrackSample.swift; sourceTree = "<group>"; };
 		790742C752654419F87BF139 /* DefaultVideoEditorManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DefaultVideoEditorManager.swift; path = DefaultVideoEditorManager.swift; sourceTree = "<group>"; };
+		85F1F64DDBF22F47EBC1328B /* DefaultFaceTrackingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DefaultFaceTrackingService.swift; path = DefaultFaceTrackingService.swift; sourceTree = "<group>"; };
 		8A5E026E2A8D2DEC00F73CAD /* SwiftCast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftCast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A5E027F2A8D2DEC00F73CAD /* SwiftCastTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCastTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A5E02832A8D2DEC00F73CAD /* SwiftCastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCastTests.swift; sourceTree = "<group>"; };
@@ -223,6 +231,7 @@
 				8B441AD2626F465BE3574B7A /* RecordingSession.swift */,
 				185EC83ECC816EC3C063D880 /* CameraClipMask.swift */,
 				A4DFAE02F61434DBECFF2CEF /* CameraClipLayout.swift */,
+				6B69FEA0C343B44E68FD9BDB /* FaceTrackSample.swift */,
 			);
 			name = Models;
 			path = Models;
@@ -489,6 +498,7 @@
 				8A5E02C62A8D2E0400F73CAD /* DefaultAPIRequestService.swift */,
 				8A5E02C72A8D2E0400F73CAD /* DefaultAPIQueueService.swift */,
 				A848B2B90E297D1ED1E93F3C /* DefaultVideoExportService.swift */,
+				85F1F64DDBF22F47EBC1328B /* DefaultFaceTrackingService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -498,6 +508,7 @@
 			children = (
 				8A5E02C92A8D2E0400F73CAD /* Int.swift */,
 				8AE6B3A02A8D3105007E4B29 /* Error.swift */,
+				0CAB9D8B6C9B2E21DBF03945 /* CGAffineTransform.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -567,6 +578,7 @@
 				DE5102F02E0611AA00F73CAD /* APIQueueService.swift */,
 				FB9641BCB19D0AF10376FB4B /* VideoEditorManager.swift */,
 				8ED853DE64C8B25F52969575 /* VideoExportService.swift */,
+				40D88D1194497A8ECAAFD9F2 /* FaceTrackingService.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -788,6 +800,10 @@
 				33E0D7A2F9124E62D17D7257 /* EditorView.swift in Sources */,
 				7FA3F66AE3ED11F61291E41E /* EditorViewModel.swift in Sources */,
 				17F37092639E77BE2F93A456 /* EditorViewModel+Copy.swift in Sources */,
+				9AE9AFF03AB9B9A4EED571D4 /* FaceTrackSample.swift in Sources */,
+				AE0C99D17162D52B9E25CB91 /* FaceTrackingService.swift in Sources */,
+				028174DB27ED04A258EE428A /* DefaultFaceTrackingService.swift in Sources */,
+				B6D92196629098C5C366BA63 /* CGAffineTransform.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

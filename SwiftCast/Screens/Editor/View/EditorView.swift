@@ -44,6 +44,13 @@ struct EditorView: View {
             // Camera clip overlay and playback button use a GeometryReader
             // to get the live canvas size for coordinate calculations.
             GeometryReader { geo in
+                // Tap anywhere outside the camera clip to exit focus mode.
+                if viewModel.isInManualFocusMode {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { viewModel.exitManualFocusMode() }
+                }
+
                 if viewModel.session.cameraClipURL != nil {
                     cameraClipOverlay(canvasSize: geo.size)
                 }
@@ -75,67 +82,56 @@ struct EditorView: View {
         let clipX = canvasSize.width * (layout.frame.origin.x + layout.frame.width / 2)
         let clipY = canvasSize.height * (layout.frame.origin.y + layout.frame.height / 2)
 
+        // Scale camera to fill the clip (maintaining its native AR), then apply user zoom
+        // and pan via offset — matching the export compositor's crop+translate approach.
+        let cameraAR = viewModel.cameraAspectRatio
+        let clipAR = clipW / clipH
+        let baseW = cameraAR > clipAR ? clipH * cameraAR : clipW
+        let baseH = cameraAR > clipAR ? clipH : clipW / cameraAR
+        let scaledW = baseW * layout.zoom
+        let scaledH = baseH * layout.zoom
+        let panX = (0.5 - layout.focusPoint.x) * max(0, scaledW - clipW)
+        let panY = (0.5 - layout.focusPoint.y) * max(0, scaledH - clipH)
+
         ZStack {
-            VideoClipPlayerView(player: viewModel.cameraPlayer)
-                .scaleEffect(
-                    layout.zoom,
-                    anchor: UnitPoint(x: layout.focusPoint.x, y: layout.focusPoint.y)
-                )
-                .frame(width: clipW, height: clipH)
-                .clipShape(CameraClipMaskShape(mode: layout.maskMode))
+            ZStack {
+                VideoClipPlayerView(player: viewModel.cameraPlayer, gravity: .resize)
+                    .frame(width: scaledW, height: scaledH)
+                    .offset(x: panX, y: panY)
+            }
+            .frame(width: clipW, height: clipH)
+            .clipShape(CameraClipMaskShape(mode: layout.maskMode))
 
             if viewModel.isInManualFocusMode {
-                focusCrosshair(clipW: clipW, clipH: clipH, canvasSize: canvasSize)
+                // Outer glow pulse
+                CameraClipMaskShape(mode: layout.maskMode)
+                    .stroke(t.color.foreground.accent, lineWidth: 3)
+                    .blur(radius: 8)
+                    .frame(width: clipW, height: clipH)
+                // Crisp border on top of glow
+                CameraClipMaskShape(mode: layout.maskMode)
+                    .stroke(t.color.foreground.accent.opacity(0.9), lineWidth: 1)
+                    .frame(width: clipW, height: clipH)
             }
         }
         .frame(width: clipW, height: clipH)
-        .contentShape(Rectangle())
+        // In focus mode use the full clip rectangle so the user can drag all the way
+        // to any edge of the frame. In normal mode limit to the visible mask shape
+        // so taps in the transparent area fall through to the tap-out layer.
+        .contentShape(ClipInteractionShape(maskMode: layout.maskMode, isFocusMode: viewModel.isInManualFocusMode))
         .position(x: clipX, y: clipY)
-        .gesture(clipDragGesture(canvasSize: canvasSize))
-        .onLongPressGesture(minimumDuration: 0.4) {
-            viewModel.enterManualFocusMode()
-        }
+        .gesture(clipGesture(clipW: clipW, clipH: clipH, canvasSize: canvasSize))
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.4).onEnded { _ in
+                viewModel.isInManualFocusMode
+                    ? viewModel.exitManualFocusMode()
+                    : viewModel.enterManualFocusMode()
+            }
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 2)
                 .stroke(viewModel.isDraggingClip ? t.color.foreground.accent.opacity(0.7) : Color.clear, lineWidth: 1.5)
         )
-    }
-
-    @ViewBuilder private func focusCrosshair(clipW: CGFloat, clipH: CGFloat, canvasSize: CGSize) -> some View {
-        let fp = viewModel.cameraClipLayout.focusPoint
-        let cx = fp.x * clipW
-        let cy = fp.y * clipH
-
-        ZStack {
-            // dim overlay
-            Color.black.opacity(0.35)
-                .allowsHitTesting(false)
-
-            // crosshair
-            crosshairShape
-                .position(x: cx, y: cy)
-                .gesture(focusDragGesture(clipW: clipW, clipH: clipH))
-        }
-        .frame(width: clipW, height: clipH)
-        .overlay(alignment: .bottomTrailing) {
-            Button(EditorViewModel.Copy.manualFocusDoneButton) {
-                viewModel.exitManualFocusMode()
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.small)
-            .padding(8)
-        }
-    }
-
-    @ViewBuilder private var crosshairShape: some View {
-        ZStack {
-            Circle()
-                .stroke(Color.white, lineWidth: 1.5)
-                .frame(width: 36, height: 36)
-            Rectangle().fill(Color.white).frame(width: 1, height: 20)
-            Rectangle().fill(Color.white).frame(width: 20, height: 1)
-        }
-        .shadow(radius: 2)
     }
 
     // MARK: - Toolbar
@@ -256,26 +252,38 @@ struct EditorView: View {
 
     // MARK: - Gestures
 
-    private func clipDragGesture(canvasSize: CGSize) -> some Gesture {
+    private func clipGesture(clipW: CGFloat, clipH: CGFloat, canvasSize: CGSize) -> some Gesture {
         DragGesture(minimumDistance: 4)
             .onChanged { value in
-                if !viewModel.isDraggingClip {
-                    viewModel.clipDragBegan()
+                if viewModel.isInManualFocusMode {
+                    if !viewModel.isFocusDragging { viewModel.beginFocusDrag() }
+                    viewModel.updateFocusDrag(
+                        translation: value.translation,
+                        clipSize: CGSize(width: clipW, height: clipH)
+                    )
+                } else {
+                    if !viewModel.isDraggingClip { viewModel.clipDragBegan() }
+                    viewModel.clipDragChanged(translation: value.translation, canvasSize: canvasSize)
                 }
-                viewModel.clipDragChanged(translation: value.translation, canvasSize: canvasSize)
             }
             .onEnded { _ in
-                viewModel.clipDragEnded()
+                if viewModel.isInManualFocusMode {
+                    viewModel.endFocusDrag()
+                } else {
+                    viewModel.clipDragEnded()
+                }
             }
     }
 
-    private func focusDragGesture(clipW: CGFloat, clipH: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 0)
-            .onChanged { value in
-                let x = value.location.x / clipW
-                let y = value.location.y / clipH
-                viewModel.setFocusPoint(CGPoint(x: x, y: y))
-            }
-    }
+}
 
+// Switches between the mask shape (normal mode) and a full rectangle (focus mode)
+// so focus-adjust drags aren't bounded by the visible mask area.
+private struct ClipInteractionShape: Shape {
+    let maskMode: CameraClipMask
+    let isFocusMode: Bool
+
+    func path(in rect: CGRect) -> Path {
+        isFocusMode ? Path(rect) : CameraClipMaskShape(mode: maskMode).path(in: rect)
+    }
 }
