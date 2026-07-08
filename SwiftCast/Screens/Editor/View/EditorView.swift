@@ -9,6 +9,8 @@ struct EditorView: View {
     @Environment(\.appTheme) private var t
     @StateObject private var viewModel: EditorViewModel
 
+    private var style: EditorStyle { EditorStyle.makeStyle(with: t) }
+
     init(session: RecordingSession) {
         _viewModel = StateObject(wrappedValue: EditorViewModel(session: session))
     }
@@ -60,15 +62,15 @@ struct EditorView: View {
                     viewModel.isPlaying ? viewModel.pauseAll() : viewModel.playAll()
                 } label: {
                     Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 40, height: 40)
-                        .background(Color.black.opacity(0.45))
+                        .font(style.playbackButtonFont)
+                        .foregroundColor(style.playbackIconColor)
+                        .frame(width: style.playbackButtonDiameter, height: style.playbackButtonDiameter)
+                        .background(style.playbackButtonScrim)
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                .padding(12)
+                .padding(style.playbackButtonPadding)
             }
         }
         // Constrain the canvas to the actual screen clip aspect ratio.
@@ -77,50 +79,36 @@ struct EditorView: View {
 
     @ViewBuilder private func cameraClipOverlay(canvasSize: CGSize) -> some View {
         let layout = viewModel.cameraClipLayout
-        let clipW = canvasSize.width * layout.frame.width
-        let clipH = canvasSize.height * layout.frame.height
-        let clipX = canvasSize.width * (layout.frame.origin.x + layout.frame.width / 2)
-        let clipY = canvasSize.height * (layout.frame.origin.y + layout.frame.height / 2)
-
-        // Scale camera to fill the clip (maintaining its native AR), then apply user zoom
-        // and pan via offset — matching the export compositor's crop+translate approach.
-        let cameraAR = viewModel.cameraAspectRatio
-        let clipAR = clipW / clipH
-        let baseW = cameraAR > clipAR ? clipH * cameraAR : clipW
-        let baseH = cameraAR > clipAR ? clipH : clipW / cameraAR
-        let scaledW = baseW * layout.zoom
-        let scaledH = baseH * layout.zoom
-        let panX = (0.5 - layout.focusPoint.x) * max(0, scaledW - clipW)
-        let panY = (0.5 - layout.focusPoint.y) * max(0, scaledH - clipH)
+        let geometry = viewModel.cameraClipGeometry(canvasSize: canvasSize)
 
         ZStack {
             ZStack {
                 VideoClipPlayerView(player: viewModel.cameraPlayer, gravity: .resize)
-                    .frame(width: scaledW, height: scaledH)
-                    .offset(x: panX, y: panY)
+                    .frame(width: geometry.scaledSize.width, height: geometry.scaledSize.height)
+                    .offset(x: geometry.panOffset.width, y: geometry.panOffset.height)
             }
-            .frame(width: clipW, height: clipH)
+            .frame(width: geometry.clipSize.width, height: geometry.clipSize.height)
             .clipShape(CameraClipMaskShape(mode: layout.maskMode))
 
             if viewModel.isInManualFocusMode {
                 // Outer glow pulse
                 CameraClipMaskShape(mode: layout.maskMode)
-                    .stroke(t.color.foreground.accent, lineWidth: 3)
-                    .blur(radius: 8)
-                    .frame(width: clipW, height: clipH)
+                    .stroke(t.color.foreground.accent, lineWidth: style.focusRingWidth)
+                    .blur(radius: style.focusRingGlowRadius)
+                    .frame(width: geometry.clipSize.width, height: geometry.clipSize.height)
                 // Crisp border on top of glow
                 CameraClipMaskShape(mode: layout.maskMode)
-                    .stroke(t.color.foreground.accent.opacity(0.9), lineWidth: 1)
-                    .frame(width: clipW, height: clipH)
+                    .stroke(t.color.foreground.accent.opacity(0.9), lineWidth: style.focusHairlineWidth)
+                    .frame(width: geometry.clipSize.width, height: geometry.clipSize.height)
             }
         }
-        .frame(width: clipW, height: clipH)
+        .frame(width: geometry.clipSize.width, height: geometry.clipSize.height)
         // In focus mode use the full clip rectangle so the user can drag all the way
         // to any edge of the frame. In normal mode limit to the visible mask shape
         // so taps in the transparent area fall through to the tap-out layer.
         .contentShape(ClipInteractionShape(maskMode: layout.maskMode, isFocusMode: viewModel.isInManualFocusMode))
-        .position(x: clipX, y: clipY)
-        .gesture(clipGesture(clipW: clipW, clipH: clipH, canvasSize: canvasSize))
+        .position(x: geometry.clipCenter.x, y: geometry.clipCenter.y)
+        .gesture(clipGesture(clipSize: geometry.clipSize, canvasSize: canvasSize))
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.4).onEnded { _ in
                 viewModel.isInManualFocusMode
@@ -129,8 +117,8 @@ struct EditorView: View {
             }
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 2)
-                .stroke(viewModel.isDraggingClip ? t.color.foreground.accent.opacity(0.7) : Color.clear, lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: style.dragOutlineCornerRadius)
+                .stroke(viewModel.isDraggingClip ? t.color.foreground.accent.opacity(0.7) : Color.clear, lineWidth: style.dragOutlineWidth)
         )
     }
 
@@ -143,14 +131,14 @@ struct EditorView: View {
             } else {
                 HStack(spacing: t.spacing.xl) {
                     maskSection
-                    Divider().frame(height: 60)
+                    Divider().frame(height: style.toolbarDividerHeight)
                     focusSection
                     Spacer()
                     actionButtons
                 }
                 .padding(.horizontal, t.padding.large)
                 .padding(.vertical, t.padding.medium)
-                .frame(height: 80)
+                .frame(height: style.toolbarHeight)
             }
         }
     }
@@ -164,7 +152,7 @@ struct EditorView: View {
                 .font(t.font.helper)
                 .foregroundColor(t.color.foreground.secondary)
         }
-        .frame(height: 80)
+        .frame(height: style.toolbarHeight)
         .padding(.horizontal, t.padding.large)
     }
 
@@ -179,8 +167,8 @@ struct EditorView: View {
                         viewModel.setMaskMode(mode)
                     } label: {
                         Image(systemName: mode.systemImage)
-                            .font(.system(size: 16))
-                            .frame(width: 30, height: 30)
+                            .font(style.maskIconFont)
+                            .frame(width: style.maskIconButtonSize, height: style.maskIconButtonSize)
                             .foregroundColor(viewModel.cameraClipLayout.maskMode == mode
                                              ? t.color.foreground.accent
                                              : t.color.foreground.tertiary)
@@ -214,7 +202,7 @@ struct EditorView: View {
                         in: 1.0...4.0,
                         step: 0.1
                     )
-                    .frame(width: 100)
+                    .frame(width: style.zoomSliderWidth)
                     Image(systemName: "plus")
                         .font(t.font.helper)
                         .foregroundColor(t.color.foreground.tertiary)
@@ -252,14 +240,14 @@ struct EditorView: View {
 
     // MARK: - Gestures
 
-    private func clipGesture(clipW: CGFloat, clipH: CGFloat, canvasSize: CGSize) -> some Gesture {
+    private func clipGesture(clipSize: CGSize, canvasSize: CGSize) -> some Gesture {
         DragGesture(minimumDistance: 4)
             .onChanged { value in
                 if viewModel.isInManualFocusMode {
                     if !viewModel.isFocusDragging { viewModel.beginFocusDrag() }
                     viewModel.updateFocusDrag(
                         translation: value.translation,
-                        clipSize: CGSize(width: clipW, height: clipH)
+                        clipSize: clipSize
                     )
                 } else {
                     if !viewModel.isDraggingClip { viewModel.clipDragBegan() }

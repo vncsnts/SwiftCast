@@ -44,6 +44,7 @@ final class EditorViewModel: ObservableObject {
     // precomputed once offline (smoothed with a zero-phase filter) and playback just
     // interpolates the resulting lookup table — no ML inference while playing.
     private let faceTrackingService: any FaceTrackingService
+    private let videoExportService: any VideoExportService
     private var faceTrack: [FaceTrackSample] = []
     private var faceTrackingTask: Task<Void, Never>?
     /// Cadence of the playback focus updates — a binary search + lerp, so effectively free.
@@ -55,10 +56,11 @@ final class EditorViewModel: ObservableObject {
 
     init(
         session: RecordingSession,
-        faceTrackingService: any FaceTrackingService = DefaultFaceTrackingService.shared
+        serviceFactory: any ServiceFactory = DefaultServiceFactory.shared
     ) {
         self.session = session
-        self.faceTrackingService = faceTrackingService
+        faceTrackingService = serviceFactory.faceTrackingService
+        videoExportService = serviceFactory.videoExportService
         screenPlayer = AVPlayer(url: session.screenClipURL ?? URL(fileURLWithPath: ""))
         cameraPlayer = AVPlayer(url: session.cameraClipURL ?? URL(fileURLWithPath: ""))
         if session.exportedVideoURL != nil {
@@ -126,6 +128,37 @@ final class EditorViewModel: ObservableObject {
         frame.size.width = min(frame.size.height * normalizedAR, 1.0)
         frame.origin.x = max(0, min(centerX - frame.size.width / 2, 1 - frame.size.width))
         cameraClipLayout.frame = frame
+    }
+
+    // MARK: - Canvas Geometry
+
+    /// Where the camera clip sits on the canvas and how the aspect-filled, zoomed camera
+    /// surface is panned inside it. Owned by the ViewModel (the view only renders it) and
+    /// mirrors the export compositor's crop+translate math so preview and export match.
+    func cameraClipGeometry(canvasSize: CGSize) -> CameraClipGeometry {
+        let layout = cameraClipLayout
+        let clipW = canvasSize.width * layout.frame.width
+        let clipH = canvasSize.height * layout.frame.height
+
+        // Scale camera to fill the clip (maintaining its native AR), then apply user zoom.
+        let clipAR = clipW / clipH
+        let baseW = cameraAspectRatio > clipAR ? clipH * cameraAspectRatio : clipW
+        let baseH = cameraAspectRatio > clipAR ? clipH : clipW / cameraAspectRatio
+        let scaledW = baseW * layout.zoom
+        let scaledH = baseH * layout.zoom
+
+        return CameraClipGeometry(
+            clipSize: CGSize(width: clipW, height: clipH),
+            clipCenter: CGPoint(
+                x: canvasSize.width * (layout.frame.origin.x + layout.frame.width / 2),
+                y: canvasSize.height * (layout.frame.origin.y + layout.frame.height / 2)
+            ),
+            scaledSize: CGSize(width: scaledW, height: scaledH),
+            panOffset: CGSize(
+                width: (0.5 - layout.focusPoint.x) * max(0, scaledW - clipW),
+                height: (0.5 - layout.focusPoint.y) * max(0, scaledH - clipH)
+            )
+        )
     }
 
     // MARK: - Layout Mutations
@@ -318,7 +351,7 @@ final class EditorViewModel: ObservableObject {
         let session = self.session
         Task {
             do {
-                let url = try await DefaultVideoExportService.shared.exportVideo(
+                let url = try await videoExportService.exportVideo(
                     session: session,
                     layout: layout
                 ) { [weak self] progress in
